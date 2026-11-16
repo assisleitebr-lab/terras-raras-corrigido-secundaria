@@ -1,4 +1,4 @@
-const CACHE_NAME = 'terras-raras-game-v4';
+const CACHE_NAME = 'terras-raras-game-v4-2';
 const urlsToCache = [
   './',
   './index.html',
