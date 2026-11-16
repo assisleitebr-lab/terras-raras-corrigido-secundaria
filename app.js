@@ -41,9 +41,9 @@ function matBadge(id){
   return `<span class="mat-badge mat-${m.color}">${m.icon} ${m.name}</span>`;
 }
 
-// 20 Missões (Fase 1: 1 a 15 | Fase 2: 16 a 20 focada em Chips & Império Quântico)
+// Total de 20 Missões divididas perfeitamente em 2 Fases de 10 missões cada
 const MISSIONS = [
-  // Fase 1: Cadeia Industrial & Espacial Inicial (1-15)
+  // ==================== FASE 1: INDUSTRIAL (1 a 10) ====================
   { title: "Extração mineral", desc: "Inicie a operação da jazida e extraia seu primeiro lote de minério.", detail: "A mineração começa com a lavra do corpo mineral e transporte do minério.", goal: "ore", target: 50, reward: 1200, stage: "Fase 1: Lavra" },
   { title: "Britagem e moagem", desc: "Reduza o tamanho das rochas para liberar os minerais de interesse.", detail: "Britadores e moinhos diminuem a granulometria do minério.", goal: "concentrate", target: 20, reward: 1500, stage: "Fase 1: Cominuição" },
   { title: "Beneficiamento mineral", desc: "Concentre os minerais portadores de terras raras.", detail: "Operações físicas como separação magnética elevam o teor dos minerais.", goal: "mixed", target: 12, reward: 1800, stage: "Fase 1: Concentração" },
@@ -53,19 +53,19 @@ const MISSIONS = [
   { title: "Refino e obtenção dos metais", desc: "Transforme óxidos selecionados em metais.", detail: "Obtenção de metais por redução metalotérmica.", goal: "metal", target: 10, reward: 3500, stage: "Fase 1: Metalurgia" },
   { title: "Fabricação de ligas metálicas", desc: "Produza uma liga adequada à fabricação de ímãs permanentes.", detail: "Ligas NdFeB utilizam neodímio, ferro e boro.", goal: "alloy", target: 8, reward: 4200, stage: "Fase 1: Ligas" },
   { title: "Produção de ímãs permanentes", desc: "Fabrique ímãs permanentes de neodímio-ferro-boro.", detail: "Compactação, sinterização e tratamentos posteriores.", goal: "magnet", target: 5, reward: 5000, stage: "Fase 1: Ímãs" },
-  { title: "Aplicação industrial", desc: "Forneça componentes magnéticos para aplicações tecnológicas.", detail: "Ímãs de alto desempenho em motores elétricos e geradores.", goal: "motor", target: 3, reward: 7000, stage: "Fase 1: Tecnologia" },
-  { title: "Microeletrônica avançada", desc: "Integre motores e óxidos para fabricar chips de alta precisão.", detail: "Semicondutores essenciais para automação avançada.", goal: "chip", target: 3, reward: 9500, stage: "Fase 1: Microeletrônica" },
-  { title: "Armazenamento de alta densidade", desc: "Fabrique baterias de estado sólido com ligas e óxidos purificados.", detail: "Armazenamento energético de altíssima eficiência.", goal: "battery", target: 2, reward: 12000, stage: "Fase 1: Energia" },
-  { title: "Propulsão de alta performance", desc: "Desenvolva o núcleo de propulsão magnética para veículos espaciais.", detail: "Combina motores elétricos e chips avançados.", goal: "quantum_core", target: 2, reward: 16000, stage: "Fase 1: Propulsão" },
-  { title: "Projeto Especial Aurora", desc: "Monte o protótipo inicial da espaçonave de exploração.", detail: "Integração de baterias, núcleos quânticos e ligas especiais.", goal: "vovo_artifact", target: 1, reward: 25000, stage: "Fase 1: Exploração" },
-  { title: "O Legado de VovôBrDias", desc: "Conclua a frota espacial definitiva e eternize o nome do Diretor!", detail: "A fase suprema da indústria de terras raras dedicada ao grande Diretor VovôBrDias.", goal: "vovo_artifact", target: 3, reward: 50000, stage: "Fase 1: O Legado" },
+  { title: "Aplicação industrial", desc: "Forneça componentes magnéticos para motores elétricos e conclusão da Fase 1.", detail: "Ímãs de alto desempenho em motores elétricos e geradores.", goal: "motor", target: 3, reward: 10000, stage: "Fase 1: Conclusão & Nível" },
 
-  // Fase 2: Era dos Chips & Domínio Quântico (16-20)
-  { title: "Nanofabricação em Massa", desc: "Inicie a Fase 2 produzindo linha massiva de chips eletrônicos de precisão.", detail: "A demanda global por semicondutores exige produção em larga escala.", goal: "chip", target: 10, reward: 75000, stage: "Fase 2: Nanotecnologia" },
-  { title: "Supercomputadores Quânticos", desc: "Construa núcleos quânticos para processamento de dados estelares.", detail: "Tecnologia de ponta alimentada por chips de silício e terras raras.", goal: "quantum_core", target: 5, reward: 110000, stage: "Fase 2: Supercomputação" },
-  { title: "Frota Estelar de VovôBrDias", desc: "Monte múltiplos Módulos Espaciais VovôBrDias usando chips e núcleos quânticos.", detail: "A expansão definitiva do império rumo às profundezas do universo.", goal: "vovo_artifact", target: 5, reward: 160000, stage: "Fase 2: Expansão Estelar" },
-  { title: "Monopólio de Semicondutores", desc: "Domine o mercado intergaláctico de microchips de alta performance.", detail: "O topo absoluto da cadeia tecnológica sob a liderança do Diretor.", goal: "chip", target: 25, reward: 250000, stage: "Fase 2: Império Comercial" },
-  { title: "O Trono do Cosmos", desc: "A missão final definitiva: eternize o império supremo de VovôBrDias nas estrelas!", detail: "A coroação máxima do Diretor na história da mineração e tecnologia.", goal: "vovo_artifact", target: 10, reward: 500000, stage: "Fase 2: O Legado Eterno" }
+  // ==================== FASE 2: CHIPS & QUANTUM (11 a 20) ====================
+  { title: "Microeletrônica avançada", desc: "Inicie a Fase 2 integrando motores e óxidos para fabricar chips de alta precisão.", detail: "Semicondutores essenciais para automação avançada.", goal: "chip", target: 5, reward: 15000, stage: "Fase 2: Nanotecnologia" },
+  { title: "Armazenamento de alta densidade", desc: "Fabrique baterias de estado sólido com ligas e óxidos purificados.", detail: "Armazenamento energético de altíssima eficiência.", goal: "battery", target: 4, reward: 20000, stage: "Fase 2: Energia" },
+  { title: "Propulsão de alta performance", desc: "Desenvolva o núcleo de propulsão magnética para veículos espaciais.", detail: "Combina motores elétricos e chips avançados.", goal: "quantum_core", target: 3, reward: 28000, stage: "Fase 2: Propulsão" },
+  { title: "Projeto Especial Aurora", desc: "Monte o protótipo inicial da espaçonave de exploração.", detail: "Integração de baterias, núcleos quânticos e ligas especiais.", goal: "vovo_artifact", target: 2, reward: 40000, stage: "Fase 2: Exploração" },
+  { title: "Nanofabricação em Massa", desc: "Estabeleça a linha massiva de chips eletrônicos de precisão.", detail: "A demanda global por semicondutores exige produção em larga escala.", goal: "chip", target: 15, reward: 60000, stage: "Fase 2: Semicondutores" },
+  { title: "Supercomputadores Quânticos", desc: "Construa núcleos quânticos para processamento de dados estelares.", detail: "Tecnologia de ponta alimentada por chips de silício e terras raras.", goal: "quantum_core", target: 8, reward: 90000, stage: "Fase 2: Supercomputação" },
+  { title: "Frota Estelar de VovôBrDias", desc: "Monte múltiplos Módulos Espaciais VovôBrDias usando chips e núcleos quânticos.", detail: "A expansão definitiva do império rumo às profundezas do universo.", goal: "vovo_artifact", target: 5, reward: 130000, stage: "Fase 2: Expansão Estelar" },
+  { title: "Monopólio Tecnológico", desc: "Domine o mercado intergaláctico de microchips de alta performance.", detail: "O topo absoluto da cadeia tecnológica sob a liderança do Diretor.", goal: "chip", target: 30, reward: 200000, stage: "Fase 2: Império Comercial" },
+  { title: "O Legado de VovôBrDias", desc: "Consolide a frota espacial definitiva e eternize o nome do Diretor!", detail: "A fase suprema da indústria de terras raras dedicada ao grande Diretor VovôBrDias.", goal: "vovo_artifact", target: 10, reward: 350000, stage: "Fase 2: O Legado" },
+  { title: "O Trono do Cosmos", desc: "A missão final definitiva: coroe o império supremo de VovôBrDias nas estrelas!", detail: "A coroação máxima do Diretor na história da mineração e tecnologia universal.", goal: "vovo_artifact", target: 20, reward: 1000000, stage: "Fase 2: Eternidade" }
 ];
 
 const PROCESSES = [
@@ -77,10 +77,10 @@ const PROCESSES = [
   { id: "alloy", title: "Produção de ligas", icon: "▣", desc: "Combina metais e elementos de liga para formar NdFeB.", input: "metal", qty: 3, output: "alloy", out: 2, cost: 700, unlock: 6, mission: 7, learn: "A liga NdFeB combina neodímio, ferro e boro." },
   { id: "magnet", title: "Fabricação de ímãs", icon: "✥", desc: "Processa a liga para produzir ímãs permanentes.", input: "alloy", qty: 2, output: "magnet", out: 1, cost: 900, unlock: 7, mission: 8, learn: "Envolve alinhamento de pó, compactação e sinterização." },
   { id: "motor", title: "Componente industrial", icon: "⚙", desc: "Integra os ímãs em componentes para motores elétricos.", input: "magnet", qty: 2, output: "motor", out: 1, cost: 1200, unlock: 8, mission: 9, learn: "Motores de alta densidade de potência." },
-  { id: "chip", title: "Fabricação de chip eletrônico", icon: "❖", desc: "Integra elementos de terras raras em microcomponentes.", input: "motor", qty: 1, extraInput: "oxide", extraQty: 2, output: "chip", out: 1, cost: 1800, unlock: 10, mission: 10, learn: "Essencial em semicondutores e telas avançadas." },
-  { id: "battery", title: "Bateria de estado sólido", icon: "⚡", desc: "Fabrica baterias de alta densidade energética para veículos avançados.", input: "alloy", qty: 2, extraInput: "oxide", extraQty: 2, output: "battery", out: 1, cost: 2500, unlock: 11, mission: 11, learn: "Baterias avançadas usando compostos de terras raras." },
-  { id: "quantum_core", title: "Núcleo magnético quântico", icon: "⚛", desc: "Cria o propulsor magnético para espaçonaves.", input: "motor", qty: 2, extraInput: "chip", extraQty: 1, output: "quantum_core", out: 1, cost: 4000, unlock: 12, mission: 12, learn: "Tecnologia de propulsão avançada." },
-  { id: "vovo_artifact", title: "Módulo Espacial VovôBrDias", icon: "🚀", desc: "Montagem do artefato supremo em homenagem ao Diretor VovôBrDias!", input: "quantum_core", qty: 1, extraInput: "battery", extraQty: 2, output: "vovo_artifact", out: 1, cost: 8000, unlock: 13, mission: 13, isFinalProject: true, learn: "O ápice da tecnologia industrial e espacial da Mineradora Aurora, eternizando o Diretor VovôBrDias!" }
+  { id: "chip", title: "Fabricação de chip eletrônico", icon: "❖", desc: "Integra elementos de terras raras em microcomponentes (Liberado na Fase 2).", input: "motor", qty: 1, extraInput: "oxide", extraQty: 2, output: "chip", out: 1, cost: 1800, unlock: 10, mission: 11, learn: "Essencial em semicondutores e telas avançadas." },
+  { id: "battery", title: "Bateria de estado sólido", icon: "⚡", desc: "Fabrica baterias de alta densidade energética para veículos avançados.", input: "alloy", qty: 2, extraInput: "oxide", extraQty: 2, output: "battery", out: 1, cost: 2500, unlock: 11, mission: 12, learn: "Baterias avançadas usando compostos de terras raras." },
+  { id: "quantum_core", title: "Núcleo magnético quântico", icon: "⚛", desc: "Cria o propulsor magnético para espaçonaves.", input: "motor", qty: 2, extraInput: "chip", extraQty: 1, output: "quantum_core", out: 1, cost: 4000, unlock: 12, mission: 13, learn: "Tecnologia de propulsão avançada." },
+  { id: "vovo_artifact", title: "Módulo Espacial VovôBrDias", icon: "🚀", desc: "Montagem do artefato supremo em homenagem ao Diretor VovôBrDias!", input: "quantum_core", qty: 1, extraInput: "battery", extraQty: 2, output: "vovo_artifact", out: 1, cost: 8000, unlock: 13, mission: 14, isFinalProject: true, learn: "O ápice da tecnologia industrial e espacial da Mineradora Aurora, eternizando o Diretor VovôBrDias!" }
 ];
 
 const UPGRADES = [
@@ -107,7 +107,7 @@ let state = loadState();
 
 function loadState(){
   try{
-    const saved = JSON.parse(localStorage.getItem("terrasRarasSaveProV3_3"));
+    const saved = JSON.parse(localStorage.getItem("terrasRarasSaveProV3_4"));
     if(saved){
       return {
         ...structuredClone(DEFAULT_STATE),
@@ -149,7 +149,7 @@ async function loadFromCloud(){
         completed: Array.isArray(cloudData.completed) ? cloudData.completed : [],
         upgrades: Array.isArray(cloudData.upgrades) ? cloudData.upgrades : []
       };
-      localStorage.setItem("terrasRarasSaveProV3_3", JSON.stringify(state));
+      localStorage.setItem("terrasRarasSaveProV3_4", JSON.stringify(state));
       renderAll();
       toast("Progresso sincronizado do Firebase com sucesso!");
     }
@@ -160,7 +160,7 @@ async function loadFromCloud(){
 
 function save(){
   try{
-    localStorage.setItem("terrasRarasSaveProV3_3", JSON.stringify(state));
+    localStorage.setItem("terrasRarasSaveProV3_4", JSON.stringify(state));
     saveToCloud(state);
   }catch(e){}
   renderAll();
@@ -180,7 +180,7 @@ function effectiveCost(p){
 }
 
 let audioEnabled = true;
-let lastSpokenText = "Bem-vindo ao Centro de Comando Terras Raras · Fase 2.";
+let lastSpokenText = "Bem-vindo ao Centro de Comando Terras Raras.";
 
 function setAudioStatus(msg){
   const status = $("audioStatus");
@@ -208,7 +208,7 @@ function stopSpeech(){
 function speakCurrentMission(){
   const i = activeMissionIndex();
   if(i < 0){
-    speak("Parabéns! Todas as vinte missões da Fase 1 e Fase 2 foram concluídas com sucesso!");
+    speak("Parabéns! Todas as vinte missões foram concluídas com sucesso!");
     return;
   }
   const m = MISSIONS[i];
@@ -266,7 +266,6 @@ function changeView(name){
   const titleEl = $("pageTitle");
   if(titleEl) titleEl.textContent = labels[name] || "Visão geral";
   
-  // Close mobile sidebar and backdrop
   const sidebar = $("sidebar");
   const backdrop = $("sidebarBackdrop");
   if(sidebar) sidebar.classList.remove("open");
@@ -290,10 +289,10 @@ function renderStock(){
 function renderChain(){
   const strip = $("chainStrip");
   if(!strip) return;
-  const displayMissions = MISSIONS.slice(0, 15);
+  const displayMissions = MISSIONS.slice(0, 10);
   strip.innerHTML = displayMissions.map((m, i) => `
     <div class="chain-step ${state.completed.includes(i) ? "done" : i === activeMissionIndex() ? "" : "locked"}">
-      <span class="step-no">ETAPA ${String(i + 1).padStart(2, "0")}</span>
+      <span class="step-no">FASE 1 · ${String(i + 1).padStart(2, "0")}</span>
       <strong>${m.title}</strong>
       <div style="margin-top:6px">${matBadge(m.goal)}</div>
     </div>
@@ -307,32 +306,32 @@ function renderDashboard(){
   if($("statOre")) $("statOre").innerHTML = `${fmt(state.stock.ore)} <small>un.</small>`;
   if($("statProduction")) $("statProduction").innerHTML = `${fmt(state.production)} <small>un.</small>`;
   if($("statMissions")) $("statMissions").innerHTML = `${state.completed.length} <small>/ 20</small>`;
-  if($("companyLevel")) $("companyLevel").textContent = 1 + Math.floor(state.completed.length / 2);
+  if($("companyLevel")) $("companyLevel").textContent = state.completed.length >= 10 ? 2 : 1;
   if($("missionCount")) $("missionCount").textContent = idx < 0 ? "★" : idx + 1;
   if($("heroIndex")){
     $("heroIndex").innerHTML = `${idx < 0 ? "20" : String(idx + 1).padStart(2, "0")} <span>/ 20</span>`;
   }
 
-  const isPhase2 = state.completed.length >= 15;
-  if($("heroKicker")) $("heroKicker").textContent = isPhase2 ? "FASE 2 · NANOFABRICAÇÃO & IMPÉRIO" : "FASE 1 · INFRAESTRUTURA INDUSTRIAL";
-  if($("heroTitle")) $("heroTitle").innerHTML = isPhase2 ? "Era dos<br><em>chips.</em>" : "Rumo às<br><em>estrelas.</em>";
+  const isPhase2 = state.completed.length >= 10;
+  if($("heroKicker")) $("heroKicker").textContent = isPhase2 ? "FASE 2 · NANOFABRICAÇÃO DE CHIPS & QUANTUM" : "FASE 1 · INFRAESTRUTURA INDUSTRIAL (1-10)";
+  if($("heroTitle")) $("heroTitle").innerHTML = isPhase2 ? "Era dos<br><em>chips.</em>" : "Rumo à<br><em>excelência.</em>";
   if($("heroDesc")) $("heroDesc").textContent = isPhase2 
-    ? "A Fase 2 está ativa! Produza chips avançados, núcleos quânticos e domine o mercado intergaláctico." 
-    : "Construa propulsores quânticos e concretize o Módulo Especial VovôBrDias na Fase 1, antes de avançar para a Fase 2 de Nanofabricação de Chips.";
+    ? "A Fase 2 está ativa! Produza chips avançados, núcleos quânticos e domine o império estelar." 
+    : "Conclua as 10 primeiras missões industriais para receber a Homenagem de Nível e desbloquear a Fase 2.";
 
   if(idx < 0){
     if($("nextMissionEyebrow")) $("nextMissionEyebrow").textContent = "IMPÉRIO VOVÔBRDIAS CONSOLIDADO";
     if($("nextMissionTitle")) $("nextMissionTitle").textContent = "O Trono do Cosmos é seu!";
-    if($("nextMissionDesc")) $("nextMissionDesc").innerHTML = `Parabéns Diretor! Todas as 20 missões da Fase 1 e Fase 2 foram concluídas com glória suprema.`;
+    if($("nextMissionDesc")) $("nextMissionDesc").innerHTML = `Parabéns Diretor VovôBrDias! Todas as 20 missões foram concluídas com glória suprema.`;
     if($("nextMissionBadge")) $("nextMissionBadge").textContent = "CONCLUÍDA";
     if($("missionProgressText")) $("missionProgressText").textContent = "100%";
     if($("missionProgressBar")) $("missionProgressBar").style.width = "100%";
     if($("nextMissionActionBtn")) $("nextMissionActionBtn").style.display = "none";
   }else{
-    if($("nextMissionEyebrow")) $("nextMissionEyebrow").textContent = isPhase2 ? "OBJETIVO DA FASE 2" : "PRÓXIMO OBJETIVO";
+    if($("nextMissionEyebrow")) $("nextMissionEyebrow").textContent = isPhase2 ? "OBJETIVO DA FASE 2" : "PRÓXIMO OBJETIVO (FASE 1)";
     if($("nextMissionTitle")) $("nextMissionTitle").textContent = `Missão ${String(idx + 1).padStart(2, "0")} · ${MISSIONS[idx].title}`;
     if($("nextMissionDesc")) $("nextMissionDesc").innerHTML = `${MISSIONS[idx].desc} Meta: <strong>${MISSIONS[idx].target} un.</strong> de ${matBadge(MISSIONS[idx].goal)}.`;
-    if($("nextMissionBadge")) $("nextMissionBadge").textContent = isPhase2 ? "FASE 2 ATIVA" : "EM ANDAMENTO";
+    if($("nextMissionBadge")) $("nextMissionBadge").textContent = isPhase2 ? "FASE 2 ATIVA" : "FASE 1";
     if($("missionProgressText")) $("missionProgressText").textContent = missionProgress(idx) + "%";
     if($("missionProgressBar")) $("missionProgressBar").style.width = missionProgress(idx) + "%";
     if($("nextMissionActionBtn")) $("nextMissionActionBtn").style.display = "inline-flex";
@@ -343,7 +342,7 @@ function renderDashboard(){
     dashOffer.innerHTML = (state.completed.length >= MISSIONS.length) ? `
       <div class="final-chip-card">
         <div class="final-chip-head"><span class="final-chip-icon">🚀</span><div><span class="eyebrow" style="color:var(--accent)">O LEGADO SUPREMO</span><h4>Império de VovôBrDias Eternizado!</h4></div></div>
-        <p>Você completou a Fase 2 de fabricação de chips e dominou o cosmos!</p>
+        <p>Você completou todas as 20 missões e dominou o cosmos!</p>
       </div>
     ` : isPhase2 ? `
       <div class="final-chip-card" style="border-color:var(--cyan)">
@@ -362,20 +361,25 @@ function renderMissions(){
   if($("allMissionProgress")) $("allMissionProgress").style.width = pct + "%";
   if($("allMissionPercent")) $("allMissionPercent").textContent = `${pct}% concluído (Fase 1 & Fase 2)`;
 
-  const isPhase2Unlocked = state.completed.length >= 15;
+  const isPhase2Unlocked = state.completed.length >= 10;
   const mOffer = $("finalChipOfferMissions");
   if(mOffer){
     mOffer.innerHTML = (state.completed.length >= MISSIONS.length) ? `
       <div class="final-chip-card" style="margin-bottom:20px;">
         <div class="final-chip-head"><span class="final-chip-icon">🚀</span><div><span class="eyebrow" style="color:var(--accent)">O LEGADO SUPREMO</span><h4>Todas as 20 missões concluídas!</h4></div></div>
-        <p>Você completou a Fase 1 e a Fase 2 de fabricação de chips com excelência!</p>
+        <p>Você completou a Fase 1 e a Fase 2 com excelência absoluta!</p>
       </div>
     ` : isPhase2Unlocked ? `
       <div class="final-chip-card" style="margin-bottom:20px;border-color:var(--cyan)">
-        <div class="final-chip-head"><span class="final-chip-icon" style="background:rgba(6,182,212,0.2);color:var(--cyan)">❖</span><div><span class="eyebrow" style="color:var(--cyan)">FASE 2 DESBLOQUEADA</span><h4>Era da Nanotecnologia & Chips Avançados</h4></div></div>
-        <p>Você concluiu a base industrial! Agora execute as missões de fabricação em massa de chips e supercomputação.</p>
+        <div class="final-chip-head"><span class="final-chip-icon" style="background:rgba(6,182,212,0.2);color:var(--cyan)">🏆</span><div><span class="eyebrow" style="color:var(--cyan)">FASE 2 ATIVA · NÍVEL 2 ALCANÇADO</span><h4>Era dos Chips & Nanotecnologia</h4></div></div>
+        <p>Parabéns pela homenagem de nível! Agora execute as missões de fabricação em massa de chips e supercomputação quântica.</p>
       </div>
-    ` : "";
+    ` : `
+      <div class="final-chip-card" style="margin-bottom:20px;border-color:var(--amber)">
+        <div class="final-chip-head"><span class="final-chip-icon" style="background:rgba(245,158,11,0.2);color:var(--amber)">⭐</span><div><span class="eyebrow" style="color:var(--amber)">FASE 1 EM ANDAMENTO</span><h4>Conclua as 10 primeiras missões</h4></div></div>
+        <p>Complete a 10ª missão para receber a Homenagem de Nível do Diretor VovôBrDias e desbloquear a Fase 2.</p>
+      </div>
+    `;
   }
 
   const mList = $("missionList");
@@ -385,12 +389,12 @@ function renderMissions(){
     const unlocked = i === activeMissionIndex() || done;
     const progress = done ? 100 : unlocked ? missionProgress(i) : 0;
     const readyToClaim = unlocked && !done && (state.stock[m.goal] || 0) >= m.target;
-    const isPhase2Mission = i >= 15;
+    const isPhase2Mission = i >= 10;
     return `
       <article class="mission-card ${done ? "completed" : unlocked ? "unlocked" : "locked"} ${isPhase2Mission ? 'phase2-mission-card' : ''}">
         <div class="mission-number">${done ? "✓" : String(i + 1).padStart(2, "0")}</div>
         <div class="mission-info">
-          <h3>${m.title} ${isPhase2Mission ? '<span style="color:var(--cyan);font-size:10px;margin-left:6px">[FASE 2]</span>' : ''}</h3>
+          <h3>${m.title} ${isPhase2Mission ? '<span style="color:var(--cyan);font-size:10px;margin-left:6px">[FASE 2]</span>' : '<span style="color:var(--accent);font-size:10px;margin-left:6px">[FASE 1]</span>'}</h3>
           <p>${m.desc}</p>
           <div class="mission-reward">Meta: <strong>${m.target} un.</strong> de ${matBadge(m.goal)} · Recompensa: ◈ ${fmt(m.reward)} CR · ${m.stage}</div>
           <div class="progress-track" style="margin-top:10px;max-width:280px"><span style="width:${progress}%"></span></div>
@@ -519,8 +523,8 @@ const STAGE_THEMES = [
 
 function currentStageTheme(){
   const completed = state.completed.length;
-  if(completed >= 15) return STAGE_THEMES[5];
-  const idx = Math.min(4, Math.floor(completed / 3));
+  if(completed >= 10) return STAGE_THEMES[5];
+  const idx = Math.min(4, Math.floor(completed / 2));
   return STAGE_THEMES[idx];
 }
 
@@ -574,16 +578,16 @@ function completeMission(i){
   state.coins += m.reward;
   save();
   const isAllDone = state.completed.length >= MISSIONS.length;
-  const justUnlockedPhase2 = state.completed.length === 15;
+  const justUnlockedPhase2 = state.completed.length === 10;
   
-  let titleModal = isAllDone ? "Império Supremo Concluído!" : justUnlockedPhase2 ? "🚀 FASE 2 DESBLOQUEADA!" : "Missão concluída!";
+  let titleModal = isAllDone ? "Império Supremo Concluído!" : justUnlockedPhase2 ? "🏆 HOMENAGEM DE NÍVEL · FASE 2 LIBERADA!" : "Missão concluída!";
   let htmlResult = isAllDone
-    ? `Parabéns Diretor! Você concluiu todas as 20 missões da Fase 1 e Fase 2, eternizando o império supremo de <strong>VovôBrDias</strong>!`
+    ? `Parabéns Diretor VovôBrDias! Você concluiu todas as 20 missões, eternizando seu império supremo nas estrelas!`
     : justUnlockedPhase2
-    ? `Incrível Diretor! Você concluiu a Fase 1 industrial e acabou de desbloquear a <strong>Fase 2: Nanofabricação de Chips & Império Quântico</strong>!`
+    ? `⭐ <strong>Homenagem Especial ao Diretor VovôBrDias!</strong><br><br>Você completou com brilhantismo as <strong>10 primeiras missões</strong> da Fase 1!<br>Sua liderança elevou a mineradora ao <strong>Nível 2</strong>.<br><br>🚀 A <strong>Fase 2: Era da Nanofabricação de Chips & Supercomputadores Quânticos</strong> está oficialmente iniciada! Prepare-se para novos desafios tecnológicos.`
     : `Parabéns! Você concluiu a missão <strong>${m.title}</strong> e recebeu <strong>${fmt(m.reward)} créditos</strong>.`;
 
-  showModal(titleModal, htmlResult, isAllDone ? "🚀" : justUnlockedPhase2 ? "❖" : "✦", isAllDone ? "LEGADO ETERNO" : justUnlockedPhase2 ? "FASE 2" : "RECOMPENSA");
+  showModal(titleModal, htmlResult, isAllDone ? "🚀" : justUnlockedPhase2 ? "🏆" : "✦", isAllDone ? "LEGADO ETERNO" : justUnlockedPhase2 ? "SUBIDA DE NÍVEL" : "RECOMPENSA");
 }
 
 function sellMaterial(id){
