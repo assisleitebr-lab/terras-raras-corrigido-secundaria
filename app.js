@@ -95,7 +95,7 @@ const UPGRADES = [
 
 const DEFAULT_STATE = {
   coins: 15000,
-  stock: { ore: 300, concentrate: 0, mixed: 0, oxide: 0, metal: 0, alloy: 0, magnet: 0, motor: 0, chip: 0, battery: 0, quantum_core: 0, vovo_artifact: 0 },
+  stock: { ore: 1000, concentrate: 0, mixed: 0, oxide: 0, metal: 0, alloy: 0, magnet: 0, motor: 0, chip: 0, battery: 0, quantum_core: 0, vovo_artifact: 0 },
   produced: { concentrate: 0, mixed: 0, oxide: 0, metal: 0, alloy: 0, magnet: 0, motor: 0, chip: 0, battery: 0, quantum_core: 0, vovo_artifact: 0 },
   completed: [],
   production: 0,
