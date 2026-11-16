@@ -1,4 +1,4 @@
-const CACHE_NAME = 'terras-raras-v3.4';
+const CACHE_NAME = 'terras-raras-v3.5';
 const urlsToCache = [
   'index.html',
   'style.css',
