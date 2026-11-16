@@ -409,7 +409,139 @@ function renderUpgrades(){
   }).join("");
 }
 
+
+const STAGE_THEMES = [
+  {
+    name:"FASE 1 · JAZIDA E LAVRA",
+    svg:`<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="sky1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#13293d"/><stop offset="100%" stop-color="#224459"/></linearGradient>
+        <linearGradient id="oreGlow" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#d8f69b"/><stop offset="100%" stop-color="#79a83c"/></linearGradient>
+      </defs>
+      <rect width="640" height="280" fill="url(#sky1)"/>
+      <circle cx="510" cy="65" r="46" fill="#b6ed62" opacity="0.10"/>
+      <polygon points="180,280 310,115 445,280" fill="#183247"/>
+      <polygon points="330,280 485,82 640,280" fill="#1f3f56"/>
+      <polygon points="485,82 525,135 495,145 470,125" fill="#b6ed62" opacity="0.28"/>
+      <path d="M430 165 L465 142 L495 162 L482 198 L440 192 Z" fill="url(#oreGlow)" opacity="0.92"/>
+      <path d="M355 215 L380 198 L402 214 L390 238 L362 234 Z" fill="url(#oreGlow)" opacity="0.72"/>
+      <path d="M210 245 Q360 220 620 250 L640 280 L190 280 Z" fill="#0f2030"/>
+      <g stroke="#b6ed62" stroke-width="2" fill="none" opacity="0.55">
+        <line x1="270" y1="225" x2="345" y2="185"/><rect x="342" y="176" width="26" height="16" rx="3" fill="#b6ed62" fill-opacity="0.2"/>
+        <circle cx="268" cy="232" r="9"/><circle cx="296" cy="232" r="9"/>
+      </g>
+      <g fill="#d8f69b" opacity="0.75"><circle cx="420" cy="120" r="2.5"/><circle cx="545" cy="110" r="3"/><circle cx="575" cy="165" r="2"/><circle cx="395" cy="155" r="2"/></g>
+    </svg>`
+  },
+  {
+    name:"FASE 2 · COMINUIÇÃO E BENEFICIAMENTO",
+    svg:`<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="sky2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#11263a"/><stop offset="100%" stop-color="#1e4554"/></linearGradient>
+      </defs>
+      <rect width="640" height="280" fill="url(#sky2)"/>
+      <g stroke="#7fb347" stroke-width="1.5" opacity="0.22"><line x1="180" y1="50" x2="640" y2="50"/><line x1="180" y1="100" x2="640" y2="100"/><line x1="180" y1="150" x2="640" y2="150"/></g>
+      <rect x="255" y="135" width="74" height="115" rx="8" fill="#1c3c52" stroke="#9dd24c" stroke-width="2"/>
+      <polygon points="255,135 292,102 329,135" fill="#274e68" stroke="#9dd24c" stroke-width="2"/>
+      <rect x="355" y="115" width="84" height="135" rx="8" fill="#1c3c52" stroke="#b6ed62" stroke-width="2"/>
+      <polygon points="355,115 397,78 439,115" fill="#274e68" stroke="#b6ed62" stroke-width="2"/>
+      <line x1="210" y1="210" x2="565" y2="175" stroke="#b6ed62" stroke-width="6" stroke-linecap="round" opacity="0.65"/>
+      <circle cx="495" cy="182" r="24" fill="none" stroke="#d8f69b" stroke-width="3" stroke-dasharray="8 5"/>
+      <circle cx="550" cy="177" r="18" fill="none" stroke="#b6ed62" stroke-width="2.5" stroke-dasharray="6 4"/>
+      <rect x="180" y="248" width="460" height="32" fill="#0c1b29"/>
+      <g fill="#b6ed62" opacity="0.8"><circle cx="292" cy="168" r="4"/><circle cx="397" cy="155" r="5"/><circle cx="397" cy="180" r="4"/></g>
+    </svg>`
+  },
+  {
+    name:"FASE 3 · HIDROMETALURGIA E ÓXIDOS",
+    svg:`<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="sky3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0f2336"/><stop offset="100%" stop-color="#1b434e"/></linearGradient>
+        <linearGradient id="chem" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#b6ed62"/><stop offset="100%" stop-color="#38bdf8"/></linearGradient>
+      </defs>
+      <rect width="640" height="280" fill="url(#sky3)"/>
+      <g fill="#19374d" stroke="#5eead4" stroke-width="2">
+        <rect x="250" y="95" width="46" height="150" rx="22"/>
+        <rect x="325" y="75" width="52" height="170" rx="25"/>
+        <rect x="405" y="90" width="48" height="155" rx="23"/>
+      </g>
+      <rect x="333" y="135" width="36" height="95" rx="16" fill="url(#chem)" opacity="0.45"/>
+      <path d="M296 130 H325 M377 120 H405 M453 145 H525 V215 H575" fill="none" stroke="#b6ed62" stroke-width="3"/>
+      <polygon points="535,105 562,90 589,105 589,135 562,150 535,135" fill="none" stroke="#d8f69b" stroke-width="2.5"/>
+      <polygon points="547,112 562,103 577,112 577,128 562,137 547,128" fill="#b6ed62" opacity="0.55"/>
+      <rect x="180" y="245" width="460" height="35" fill="#0b1926"/>
+    </svg>`
+  },
+  {
+    name:"FASE 4 · METALURGIA E LIGAS NdFeB",
+    svg:`<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="sky4" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#122134"/><stop offset="100%" stop-color="#2c3545"/></linearGradient>
+        <radialGradient id="furnace" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fbbf24" stop-opacity="0.75"/><stop offset="60%" stop-color="#f97316" stop-opacity="0.25"/><stop offset="100%" stop-color="#122134" stop-opacity="0"/></radialGradient>
+      </defs>
+      <rect width="640" height="280" fill="url(#sky4)"/>
+      <circle cx="380" cy="165" r="115" fill="url(#furnace)"/>
+      <path d="M310 245 L330 110 H430 L450 245 Z" fill="#1d2f42" stroke="#fbbf24" stroke-width="2.5"/>
+      <rect x="352" y="155" width="56" height="42" rx="6" fill="#f59e0b" opacity="0.85"/>
+      <path d="M450 185 Q505 185 520 220" fill="none" stroke="#fbbf24" stroke-width="5" stroke-linecap="round"/>
+      <g transform="translate(485,205)">
+        <polygon points="0,25 32,12 95,12 65,25" fill="#d8f69b"/>
+        <polygon points="0,25 65,25 65,40 0,40" fill="#8bc34a"/>
+        <polygon points="65,25 95,12 95,27 65,40" fill="#5d8c32"/>
+      </g>
+      <rect x="180" y="245" width="460" height="35" fill="#0b1724"/>
+    </svg>`
+  },
+  {
+    name:"FASE 5 · ÍMÃS E ALTA TECNOLOGIA",
+    svg:`<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="sky5" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0d2235"/><stop offset="100%" stop-color="#1a4742"/></linearGradient>
+      </defs>
+      <rect width="640" height="280" fill="url(#sky5)"/>
+      <g fill="none" stroke="#b6ed62" stroke-width="1.6" opacity="0.35">
+        <ellipse cx="430" cy="145" rx="145" ry="62"/>
+        <ellipse cx="430" cy="145" rx="110" ry="44"/>
+        <ellipse cx="430" cy="145" rx="75" ry="26"/>
+      </g>
+      <circle cx="430" cy="145" r="44" fill="#163547" stroke="#b6ed62" stroke-width="3"/>
+      <circle cx="430" cy="145" r="22" fill="#b6ed62" opacity="0.9"/>
+      <g stroke="#d8f69b" stroke-width="3" stroke-linecap="round">
+        <line x1="430" y1="88" x2="430" y2="101"/><line x1="430" y1="189" x2="430" y2="202"/>
+        <line x1="373" y1="145" x2="386" y2="145"/><line x1="474" y1="145" x2="487" y2="145"/>
+      </g>
+      <g transform="translate(555,145)" stroke="#b6ed62" stroke-width="2.5" fill="none">
+        <line x1="0" y1="0" x2="0" y2="105"/>
+        <path d="M0 0 L-28 -32 M0 0 L34 -14 M0 0 L-6 38" stroke="#d8f69b" stroke-width="3"/>
+        <circle cx="0" cy="0" r="5" fill="#b6ed62"/>
+      </g>
+      <text x="430" y="150" text-anchor="middle" fill="#102235" font-family="Manrope,sans-serif" font-weight="800" font-size="13">NdFeB</text>
+      <rect x="180" y="248" width="460" height="32" fill="#091724"/>
+    </svg>`
+  }
+];
+
+function currentStageTheme(){
+  const completed = state.completed.length;
+  const idx = Math.min(STAGE_THEMES.length - 1, Math.floor(completed / 2));
+  return STAGE_THEMES[idx];
+}
+
+function renderStageTheme(){
+  const theme = currentStageTheme();
+  const heroScene = $("heroScene");
+  if(heroScene){
+    heroScene.innerHTML = `${theme.svg}<span class="hero-stage-tag">${theme.name}</span>`;
+  }
+  const backdrop = $("stageBackdrop");
+  if(backdrop){
+    const encoded = encodeURIComponent(theme.svg);
+    backdrop.style.backgroundImage = `url("data:image/svg+xml,${encoded}")`;
+  }
+}
+
 function renderAll(){
+  renderStageTheme();
   renderDashboard();
   renderMissions();
   renderProcesses();
