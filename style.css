@@ -195,10 +195,13 @@ h1 span,.page-intro h1 span{color:#7ba83e}
 .audio-copy strong{font-size:11px;color:#344452}
 .audio-copy small{font-size:9px;color:#84909a;margin-top:3px}
 .audio-actions{display:flex;gap:7px;flex-wrap:wrap}
-.audio-btn{border:1px solid #d7e1d0;background:#fff;color:#36502a;border-radius:7px;padding:8px 10px;font-size:10px;font-weight:700;cursor:pointer}
-.audio-btn:hover{background:#edf6e4}
-.audio-main{background:#203b51;color:#fff;border-color:#203b51}
-.audio-main:hover{background:#2d526e}
+.audio-btn{border:2px solid #f59e0b;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1a1405;border-radius:8px;padding:9px 13px;font-size:11px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(245,158,11,.32);transition:transform .18s,box-shadow .18s,filter .18s;display:inline-flex;align-items:center;justify-content:center;gap:6px;letter-spacing:.2px}
+.audio-btn:hover{transform:translateY(-2px);filter:brightness(1.06);box-shadow:0 6px 16px rgba(245,158,11,.45)}
+.audio-btn:active{transform:translateY(0)}
+.audio-main{background:linear-gradient(135deg,#10b981,#059669);color:#fff;border-color:#047857;box-shadow:0 4px 14px rgba(16,185,129,.35)}
+.audio-main:hover{background:linear-gradient(135deg,#34d399,#10b981);box-shadow:0 6px 18px rgba(16,185,129,.48)}
+.mission-audio-btn{background:linear-gradient(135deg,#ff6b2b,#f59e0b);color:#fff;border:2px solid #ea580c;box-shadow:0 5px 15px rgba(234,88,12,.38);text-shadow:0 1px 2px rgba(0,0,0,.2)}
+.mission-audio-btn:hover{background:linear-gradient(135deg,#ff8147,#fbbf24);box-shadow:0 7px 20px rgba(234,88,12,.52)}
 .card-audio{margin:0 0 9px;display:inline-flex}
 .inline-audio{margin:14px 0 0 8px}
 .mission-action .card-audio{margin-top:7px}
