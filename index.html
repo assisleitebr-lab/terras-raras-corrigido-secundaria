@@ -4,11 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta name="theme-color" content="#040812">
-  <meta name="description" content="Terras Raras: Mining Tycoon - Simulador gameificado de mineração, refino e tecnologia espacial com save na nuvem Firebase.">
-  <title>Terras Raras | Mining Tycoon v4.3 (Firebase)</title>
+  <meta name="description" content="Terras Raras: Mining Tycoon - Simulador gameificado de mineração, refino e tecnologia espacial com salvamento redundante Firebase + LocalStorage.">
+  <title>Terras Raras | Mining Tycoon v4.4 (Firebase + Local)</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2322c55e'/%3E%3Cstop offset='100%25' stop-color='%2306b6d4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='110' fill='%23091321'/%3E%3Crect x='24' y='24' width='464' height='464' rx='90' fill='none' stroke='url(%23g)' stroke-width='20'/%3E%3Ctext x='256' y='300' font-family='sans-serif' font-weight='900' font-size='190' fill='url(%23g)' text-anchor='middle'%3ETR%3C/text%3E%3C/svg%3E">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2322c55e'/%3E%3Cstop offset='100%25' stop-color='%2306b6d4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='110' fill='%23091321'/%3E%3Crect x='24' y='24' width='464' height='464' rx='90' fill='none' stroke='url(%23g)' stroke-width='20'/%3E%3Ctext x='256' y='300' font-family='sans-serif' font-weight='900' font-size='190' fill='url(%23g)' text-anchor='middle'%3ETR%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,600;0,700;1,700&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
@@ -22,7 +21,7 @@
     <aside class="sidebar" id="sidebar">
       <a class="brand" href="#inicio" id="brandHome" aria-label="Terras Raras início">
         <span class="brand-mark bounce-hover">💎</span>
-        <span><strong>TERRAS RARAS</strong><small>MINING TYCOON v4.3</small></span>
+        <span><strong>TERRAS RARAS</strong><small>MINING TYCOON v4.4</small></span>
       </a>
 
       <div class="company-card game-badge-card">
@@ -45,12 +44,12 @@
         <div class="help-box mascot-tip">
           <span class="mascot-avatar">🤖</span>
           <div>
-            <strong>Nuvem Firebase Ativa</strong>
-            <p id="mascotTipText">Seu progresso é gravado diretamente no banco de dados Firebase Firestore!</p>
+            <strong>Save Duplo Ativo</strong>
+            <p id="mascotTipText">Seu progresso é salvo no navegador (localStorage) e sincronizado com o Firebase.</p>
           </div>
         </div>
         <button class="reset-link" id="resetGame" type="button">🔄 Reiniciar Campanha</button>
-        <small class="version">GAME EDITION v4.3 · FIREBASE CLOUD</small>
+        <small class="version">GAME EDITION v4.4 · FIREBASE + LOCAL</small>
       </div>
     </aside>
 
@@ -92,10 +91,10 @@
           <div>
             <div class="eyebrow"><span class="live-dot"></span> OPERAÇÃO ATIVA · IMPÉRIO VOVÔBRDIAS</div>
             <h1>Base de Comando <span>Industrial</span></h1>
-            <p>Transforme rochas brutas em tecnologia espacial de ponta com salvamento automático no Firebase.</p>
+            <p>Transforme rochas brutas em tecnologia espacial com salvamento duplo garantido.</p>
           </div>
           <div class="welcome-actions">
-            <div class="date-chip">☁️ <span id="firebaseUidLabel">Firebase Conectado</span></div>
+            <div class="date-chip">💾 <span id="firebaseUidLabel">Armazenamento Seguro</span></div>
             <button class="btn btn-outline" id="mineBonusBtn" type="button">⛏️ Extrair +1.000 Minério</button>
           </div>
         </div>
@@ -116,7 +115,7 @@
 
         <div class="section-heading">
           <div><span class="eyebrow">STATUS EM TEMPO REAL</span><h2>Painel do Jogador</h2></div>
-          <span class="updated-label"><span class="live-dot" style="background:#22c55e"></span> Firestore Sync · 25k Minério</span>
+          <span class="updated-label"><span class="live-dot" style="background:#22c55e"></span> Save Protegido · 25k Minério</span>
         </div>
 
         <div class="stat-grid">
@@ -257,8 +256,8 @@
       </section>
 
       <footer class="footer">
-        <span>© 2026 TERRAS RARAS: MINING TYCOON (v4.3 · Diretor VovôBrDias)</span>
-        <span>Save 100% Firebase Firestore · Economia Calibrada (25.000 Minério · 250.000 CR).</span>
+        <span>© 2026 TERRAS RARAS: MINING TYCOON (v4.4 · Diretor VovôBrDias)</span>
+        <span>Save Duplo Firebase + LocalStorage · Economia Calibrada (25.000 Minério · 250.000 CR).</span>
       </footer>
     </main>
   </div>
