@@ -47,8 +47,15 @@ h1{font:800 30px Manrope;letter-spacing:-1.2px;margin:9px 0 7px}
 h1 span,.page-intro h1 span{color:#7ba83e}
 .welcome-row p,.page-intro p{color:#84909b;margin:0;font-size:13px}
 .date-chip{border:1px solid var(--line);background:#fff;color:#798590;padding:9px 12px;border-radius:8px;font-size:11px}
-.hero-banner{min-height:245px;border-radius:15px;background:linear-gradient(105deg,#102235,#1b354a 60%,#254657);color:white;position:relative;overflow:hidden;padding:30px 35px;display:flex;align-items:center;box-shadow:var(--shadow)}
+.main-area{position:relative;overflow-x:clip}
+.stage-backdrop{position:fixed;inset:0 0 0 252px;pointer-events:none;z-index:0;opacity:.14;background-repeat:no-repeat;background-position:right bottom;background-size:cover;transition:opacity .6s ease}
+.topbar,.audio-bar,.view,.footer{position:relative;z-index:1}
+.hero-banner{min-height:255px;border-radius:15px;background:linear-gradient(105deg,#0d1d2e 0%,#152c40 52%,#1e3e52 100%);color:white;position:relative;overflow:hidden;padding:30px 35px;display:flex;align-items:center;box-shadow:var(--shadow)}
+.hero-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0d1d2e 34%,rgba(13,29,46,.55) 62%,rgba(13,29,46,.12) 100%);z-index:1;pointer-events:none}
 .hero-copy{position:relative;z-index:2;max-width:440px}
+.hero-scene{position:absolute;right:0;top:0;bottom:0;width:62%;z-index:0;pointer-events:none;display:flex;align-items:center;justify-content:flex-end;transition:opacity .5s ease}
+.hero-scene svg{width:100%;height:100%;object-fit:cover;display:block}
+.hero-stage-tag{position:absolute;right:25px;top:20px;z-index:2;background:rgba(11,23,36,.72);border:1px solid rgba(182,237,98,.35);color:#d9f7a8;padding:5px 10px;border-radius:20px;font-size:9px;font-weight:700;letter-spacing:1.2px;backdrop-filter:blur(4px)}
 .hero-kicker{font-size:9px;letter-spacing:2px;color:#b6ed62;font-weight:700}
 .hero-copy h2{font:800 29px/1.16 Manrope;margin:12px 0 10px;letter-spacing:-.8px}
 .hero-copy h2 em{font-style:normal;color:var(--green)}
@@ -72,7 +79,7 @@ h1 span,.page-intro h1 span{color:#7ba83e}
 .spark{position:absolute;color:var(--green);font-size:20px}
 .spark-one{top:47px;right:65px}
 .spark-two{bottom:56px;left:36px}
-.hero-index{position:absolute;right:25px;bottom:20px;font:700 14px Manrope;color:#dce7ed}
+.hero-index{position:absolute;right:25px;bottom:20px;z-index:2;font:700 14px Manrope;color:#dce7ed}
 .hero-index span{font-size:10px;color:#78909f}
 .section-heading{display:flex;justify-content:space-between;align-items:flex-end;margin:30px 0 14px}
 .section-heading h2{font:700 18px Manrope;margin:5px 0 0;letter-spacing:-.4px}
@@ -237,8 +244,9 @@ h1 span,.page-intro h1 span{color:#7ba83e}
 @media(max-width:1100px){
   .sidebar{width:225px}
   .main-area{margin-left:225px;padding:0 25px}
+  .stage-backdrop{left:225px}
   .stat-grid{grid-template-columns:repeat(2,1fr)}
-  .hero-art{right:2%;opacity:.7}
+  .hero-scene{width:68%;opacity:.85}
   .market-grid,.upgrade-grid{grid-template-columns:repeat(2,1fr)}
   .learning-steps{grid-template-columns:repeat(3,1fr)}
 }
@@ -247,6 +255,7 @@ h1 span,.page-intro h1 span{color:#7ba83e}
   .sidebar{transform:translateX(-100%);transition:transform .25s;width:255px}
   .sidebar.open{transform:translateX(0);box-shadow:15px 0 40px #0004}
   .main-area{margin-left:0;padding:0 17px}
+  .stage-backdrop{left:0;opacity:.10}
   .topbar{height:63px;gap:12px}
   .mobile-menu{display:block}
   .breadcrumb{margin-right:auto}
@@ -259,7 +268,7 @@ h1 span,.page-intro h1 span{color:#7ba83e}
   .welcome-actions .new-game-btn{flex:1}
   .date-chip{display:none}
   .hero-banner{padding:25px 22px;min-height:250px}
-  .hero-art{right:-115px;opacity:.3}
+  .hero-scene{width:100%;opacity:.38}
   .hero-copy{max-width:290px}
   .hero-copy h2{font-size:26px}
   .hero-index{right:15px}
