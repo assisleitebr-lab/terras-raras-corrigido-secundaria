@@ -3,8 +3,8 @@
   "short_name": "Terras Raras",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#070d18",
-  "theme_color": "#070d18",
+  "background_color": "#040812",
+  "theme_color": "#040812",
   "orientation": "portrait-primary",
   "icons": [
     {
