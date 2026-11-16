@@ -1,8 +1,9 @@
-# Terras Raras — Mining Industry (Edição Profissional v3.2 - Fase 2: Chips & Império Quântico)
+# Terras Raras — Mining Industry (Versão PWA Responsiva v3.3)
 
-Simulador educativo avançado integrando mineração, processamento de terras raras, **Fase 2 dedicada à fabricação de chips e expansão quântica**, sincronização com **Firebase Firestore** e design moderno sci-fi industrial.
+Simulador educativo de terras raras, com Fase 1, Fase 2 (Chips & Quantum), sincronização Firebase e otimização completa para celular, computador e instalação como Aplicativo PWA no Android.
 
-## Novidades na v3.2
-- **Fase 2 desbloqueada após a missão 15**: 5 novas missões focadas em nanofabricação de chips, supercomputação quântica e domínio cósmico do Império VovôBrDias (Total de 20 missões).
-- **Interface e Temas Dinâmicos**: Acompanhe a transição da Fase 1 (Industrial) para a Fase 2 (Alta Tecnologia e Chips).
-- **Sincronização Nuvem Firebase** e botões blindados.
+## Como instalar no Android:
+1. Baixe e extraia os arquivos em uma pasta ou sirva via servidor web local / GitHub Pages.
+2. Abra no Google Chrome no Android.
+3. Toque no menu do navegador (três pontos) e selecione **"Instalar aplicativo"** ou **"Adicionar à tela inicial"**.
+4. O app será instalado como um aplicativo nativo no seu celular!
