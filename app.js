@@ -301,7 +301,7 @@ function renderMissions(){
         <div class="mission-action">
           <small>${done ? "CONCLUÍDA" : readyToClaim ? "PRONTA PARA RESGATE" : unlocked ? progress + "% concluído" : "BLOQUEADA"}</small>
           ${unlocked && !done ? `<button class="btn btn-primary" type="button" onclick="completeMission(${i})">Resgatar missão</button>` : ""}
-          <button class="audio-btn card-audio" type="button" onclick="speakMission(${i})">🔊 Ouvir instrução</button>
+          <button class="audio-btn card-audio mission-audio-btn" type="button" onclick="speakMission(${i})">🔊 Ouvir instrução</button>
         </div>
       </article>
     `;
