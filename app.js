@@ -41,7 +41,7 @@ function matBadge(id){
   return `<span class="mat-badge mat-${m.color}">${m.icon} ${m.name}</span>`;
 }
 
-// Total de 20 Missões divididas perfeitamente em 2 Fases de 10 missões cada
+// Total de 20 Missões divididas em 2 Fases de 10 missões cada
 const MISSIONS = [
   // ==================== FASE 1: INDUSTRIAL (1 a 10) ====================
   { title: "Extração mineral", desc: "Inicie a operação da jazida e extraia seu primeiro lote de minério.", detail: "A mineração começa com a lavra do corpo mineral e transporte do minério.", goal: "ore", target: 50, reward: 1200, stage: "Fase 1: Lavra" },
@@ -107,7 +107,7 @@ let state = loadState();
 
 function loadState(){
   try{
-    const saved = JSON.parse(localStorage.getItem("terrasRarasSaveProV3_4"));
+    const saved = JSON.parse(localStorage.getItem("terrasRarasSaveProV3_5"));
     if(saved){
       return {
         ...structuredClone(DEFAULT_STATE),
@@ -149,7 +149,7 @@ async function loadFromCloud(){
         completed: Array.isArray(cloudData.completed) ? cloudData.completed : [],
         upgrades: Array.isArray(cloudData.upgrades) ? cloudData.upgrades : []
       };
-      localStorage.setItem("terrasRarasSaveProV3_4", JSON.stringify(state));
+      localStorage.setItem("terrasRarasSaveProV3_5", JSON.stringify(state));
       renderAll();
       toast("Progresso sincronizado do Firebase com sucesso!");
     }
@@ -160,7 +160,7 @@ async function loadFromCloud(){
 
 function save(){
   try{
-    localStorage.setItem("terrasRarasSaveProV3_4", JSON.stringify(state));
+    localStorage.setItem("terrasRarasSaveProV3_5", JSON.stringify(state));
     saveToCloud(state);
   }catch(e){}
   renderAll();
@@ -314,7 +314,7 @@ function renderDashboard(){
 
   const isPhase2 = state.completed.length >= 10;
   if($("heroKicker")) $("heroKicker").textContent = isPhase2 ? "FASE 2 · NANOFABRICAÇÃO DE CHIPS & QUANTUM" : "FASE 1 · INFRAESTRUTURA INDUSTRIAL (1-10)";
-  if($("heroTitle")) $("heroTitle").innerHTML = isPhase2 ? "Era dos<br><em>chips.</em>" : "Rumo à<br><em>excelência.</em>";
+  if($("heroTitle")) $("heroTitle").innerHTML = isPhase2 ? "Era dos<br><em>chips.</em>" : "Maquinaria &<br><em>excelência.</em>";
   if($("heroDesc")) $("heroDesc").textContent = isPhase2 
     ? "A Fase 2 está ativa! Produza chips avançados, núcleos quânticos e domine o império estelar." 
     : "Conclua as 10 primeiras missões industriais para receber a Homenagem de Nível e desbloquear a Fase 2.";
@@ -513,12 +513,12 @@ function renderUpgrades(){
 }
 
 const STAGE_THEMES = [
-  { name: "FASE 1 · LAVRA", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><rect width="640" height="280" fill="#0b1724"/><polygon points="180,280 310,115 445,280" fill="#132538"/></svg>` },
-  { name: "FASE 1 · COMINUIÇÃO", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><rect width="640" height="280" fill="#0b1724"/><rect x="255" y="135" width="74" height="115" rx="8" fill="#172d4c"/></svg>` },
-  { name: "FASE 1 · HIDROMETALURGIA", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><rect width="640" height="280" fill="#0b1724"/><rect x="250" y="95" width="46" height="150" rx="22" fill="#1e3a5f"/></svg>` },
-  { name: "FASE 1 · METALURGIA", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><rect width="640" height="280" fill="#0b1724"/><path d="M310 245 L330 110 H430 L450 245 Z" fill="#254b7d"/></svg>` },
-  { name: "FASE 1 · ALTA TECNOLOGIA", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><rect width="640" height="280" fill="#0b1724"/><circle cx="430" cy="145" r="44" fill="#06b6d4" opacity="0.3"/></svg>` },
-  { name: "FASE 2 · NANOFABRICAÇÃO DE CHIPS", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><rect width="640" height="280" fill="#070d18"/><rect x="220" y="80" width="200" height="120" rx="12" fill="#0f1c2e" stroke="#06b6d4" stroke-width="2"/><line x1="220" y1="140" x2="420" y2="140" stroke="#22c55e" stroke-width="2"/><circle cx="320" cy="140" r="15" fill="#22c55e"/><text x="320" y="230" text-anchor="middle" fill="#06b6d4" font-family="Manrope,sans-serif" font-weight="800" font-size="13">FASE 2 · CHIPS & QUANTUM</text></svg>` }
+  { name: "FASE 1 · LAVRA", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1e3a5f"/><stop offset="100%" stop-color="#0b1724"/></linearGradient></defs><rect width="640" height="280" fill="url(#g1)"/><polygon points="120,280 260,100 400,280" fill="#132538" stroke="#22c55e" stroke-width="1.5" opacity="0.8"/><circle cx="260" cy="100" r="8" fill="#22c55e"/><text x="320" y="240" text-anchor="middle" fill="#94a3b8" font-family="Manrope,sans-serif" font-weight="800" font-size="12" letter-spacing="2">MAQUINARIA PESADA · LAVRA DE MINÉRIO</text></svg>` },
+  { name: "FASE 1 · COMINUIÇÃO", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#172d4c"/><stop offset="100%" stop-color="#070d18"/></linearGradient></defs><rect width="640" height="280" fill="url(#g2)"/><rect x="230" y="90" width="180" height="130" rx="16" fill="#0f1c2e" stroke="#06b6d4" stroke-width="2"/><circle cx="320" cy="155" r="35" fill="none" stroke="#22c55e" stroke-width="3" stroke-dasharray="8 4"/><text x="320" y="245" text-anchor="middle" fill="#06b6d4" font-family="Manrope,sans-serif" font-weight="800" font-size="12" letter-spacing="2">BRITADOR DE MANDÍBULAS INDUSTRIAL</text></svg>` },
+  { name: "FASE 1 · HIDROMETALURGIA", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1e3a5f"/><stop offset="100%" stop-color="#091321"/></linearGradient></defs><rect width="640" height="280" fill="url(#g3)"/><rect x="250" y="70" width="140" height="160" rx="24" fill="#0f1c2e" stroke="#a855f7" stroke-width="2"/><path d="M270 120 Q320 90 370 120 T420 150" fill="none" stroke="#a855f7" stroke-width="3"/><text x="320" y="250" text-anchor="middle" fill="#a855f7" font-family="Manrope,sans-serif" font-weight="800" font-size="12" letter-spacing="2">REFINARIA QUÍMICA DE ÓXIDOS</text></svg>` },
+  { name: "FASE 1 · METALURGIA", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g4" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#254b7d"/><stop offset="100%" stop-color="#0b1724"/></linearGradient></defs><rect width="640" height="280" fill="url(#g4)"/><polygon points="240,230 320,80 400,230" fill="#0f1c2e" stroke="#f59e0b" stroke-width="2"/><circle cx="320" cy="160" r="22" fill="#f59e0b" opacity="0.6"/><text x="320" y="260" text-anchor="middle" fill="#f59e0b" font-family="Manrope,sans-serif" font-weight="800" font-size="12" letter-spacing="2">FORNO METALÚRGICO DE REDUÇÃO</text></svg>` },
+  { name: "FASE 1 · ALTA TECNOLOGIA", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g5" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0f2c42"/><stop offset="100%" stop-color="#040812"/></linearGradient></defs><rect width="640" height="280" fill="url(#g5)"/><circle cx="320" cy="140" r="60" fill="none" stroke="#06b6d4" stroke-width="3"/><circle cx="320" cy="140" r="30" fill="#22c55e" opacity="0.5"/><text x="320" y="240" text-anchor="middle" fill="#22c55e" font-family="Manrope,sans-serif" font-weight="800" font-size="12" letter-spacing="2">LINHA DE ÍMÃS E MOTORES DE ALTA PERFORMANCE</text></svg>` },
+  { name: "FASE 2 · NANOFABRICAÇÃO DE CHIPS", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g6" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0f1c2e"/><stop offset="100%" stop-color="#040812"/></linearGradient></defs><rect width="640" height="280" fill="url(#g6)"/><rect x="180" y="60" width="280" height="140" rx="16" fill="#0f1c2e" stroke="#06b6d4" stroke-width="2.5"/><line x1="180" y1="130" x2="460" y2="130" stroke="#22c55e" stroke-width="2"/><circle cx="320" cy="130" r="20" fill="#22c55e" filter="drop-shadow(0 0 10px #22c55e)"/><text x="320" y="235" text-anchor="middle" fill="#06b6d4" font-family="Manrope,sans-serif" font-weight="800" font-size="13" letter-spacing="2">FASE 2 · CHIPS QUÂNTICOS & SUPORTE ESTELAR</text></svg>` }
 ];
 
 function currentStageTheme(){
