@@ -1,8 +1,9 @@
-# Terras Raras — Mining Industry (Versão PWA Responsiva v3.4 - Fase 1 & Fase 2 com Homenagem)
+# Terras Raras — Mining Industry (Versão Ultra Visual v3.5 - Cyber-Industrial Glassmorphism)
 
-Simulador educativo de terras raras, com **Fase 1 (10 missões industriais)**, **Homenagem de Nível/Level-up**, e **Fase 2 (10 missões de Chips, Quântico e Expansão Estelar - Total 20 missões)**. Sincronização Firebase e otimização completa para celular (PWA) e computador.
+Simulador educativo de terras raras com **Fase 1 e Fase 2 (20 missões)**, **Homenagem de Nível**, **Sincronização Firebase**, e **Redesign Visual Completo (Estilo Robusto com Efeito Vidro/Glassmorphism, Botões Animados e Texturas Industriais)**.
 
-## Como instalar no Android:
-1. Baixe e extraia os arquivos.
-2. Abra no Google Chrome no Android.
-3. Toque no menu do navegador e selecione **"Instalar aplicativo"** ou **"Adicionar à tela inicial"**.
+## Novidades na v3.5
+- **Estilo Cyber-Industrial Glassmorphism**: Painéis translúcidos com efeito de vidro fosco (`backdrop-filter: blur`), bordas metálicas iluminadas e profundidade tridimensional.
+- **Botões Dinâmicos e Robustos**: Animações fluidas de clique, brilho neon vibrante (`box-shadow` dinâmico) e feedback tátil visual.
+- **Visuais de Maquinaria Avançada**: Ilustrações e backdrops imersivos representando britadores pesados, refinarias de óxidos e nanofabricação de chips quânticos.
+- **Otimização PWA Mobile & Desktop**: Tela cheia perfeita no Android e computadores.
