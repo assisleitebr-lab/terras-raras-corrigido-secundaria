@@ -1,5 +1,5 @@
-// Terras Raras: Mining Tycoon v4.2
-// Salvamento 100% na Nuvem via Firebase Firestore + Auth Anônimo
+// Terras Raras: Mining Tycoon v4.3
+// Configuração exata fornecida pelo usuário, com chaves corretas do Firebase
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
