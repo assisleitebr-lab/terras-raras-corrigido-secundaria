@@ -1,10 +1,8 @@
-# Terras Raras — Mining Industry (Edição Profissional Definitiva v3.1)
+# Terras Raras — Mining Industry (Edição Profissional v3.2 - Fase 2: Chips & Império Quântico)
 
-Simulador educativo de alta tecnologia integrando mineração, processamento de terras raras, expansão espacial e **Firebase Firestore**, com arquitetura robusta e design moderno de alta performance.
+Simulador educativo avançado integrando mineração, processamento de terras raras, **Fase 2 dedicada à fabricação de chips e expansão quântica**, sincronização com **Firebase Firestore** e design moderno sci-fi industrial.
 
-## Funcionalidades
-- **15 Missões progressivas**, culminando no projeto espacial supremo *"O Legado de VovôBrDias"*.
-- **Sincronização em nuvem em tempo real** com Firebase Firestore.
-- **Arquitetura de Eventos Blindada**: Sistema de delegação de eventos para garantir 100% de confiabilidade nos botões de interatividade (produção, mercado, missões e equipamentos).
-- **Assistente de Voz (Text-to-Speech)** integrado para acessibilidade.
-- **Design Moderno e Cores Vivas**: Interface estilo painel de controle sci-fi industrial com acentos neon, glassmorphism e indicadores dinâmicos.
+## Novidades na v3.2
+- **Fase 2 desbloqueada após a missão 15**: 5 novas missões focadas em nanofabricação de chips, supercomputação quântica e domínio cósmico do Império VovôBrDias (Total de 20 missões).
+- **Interface e Temas Dinâmicos**: Acompanhe a transição da Fase 1 (Industrial) para a Fase 2 (Alta Tecnologia e Chips).
+- **Sincronização Nuvem Firebase** e botões blindados.
