@@ -107,7 +107,7 @@ let state = loadState();
 
 function loadState(){
   try{
-    const saved = JSON.parse(localStorage.getItem("terrasRarasSaveProV3_2"));
+    const saved = JSON.parse(localStorage.getItem("terrasRarasSaveProV3_3"));
     if(saved){
       return {
         ...structuredClone(DEFAULT_STATE),
@@ -149,7 +149,7 @@ async function loadFromCloud(){
         completed: Array.isArray(cloudData.completed) ? cloudData.completed : [],
         upgrades: Array.isArray(cloudData.upgrades) ? cloudData.upgrades : []
       };
-      localStorage.setItem("terrasRarasSaveProV3_2", JSON.stringify(state));
+      localStorage.setItem("terrasRarasSaveProV3_3", JSON.stringify(state));
       renderAll();
       toast("Progresso sincronizado do Firebase com sucesso!");
     }
@@ -160,7 +160,7 @@ async function loadFromCloud(){
 
 function save(){
   try{
-    localStorage.setItem("terrasRarasSaveProV3_2", JSON.stringify(state));
+    localStorage.setItem("terrasRarasSaveProV3_3", JSON.stringify(state));
     saveToCloud(state);
   }catch(e){}
   renderAll();
@@ -265,8 +265,13 @@ function changeView(name){
   };
   const titleEl = $("pageTitle");
   if(titleEl) titleEl.textContent = labels[name] || "Visão geral";
+  
+  // Close mobile sidebar and backdrop
   const sidebar = $("sidebar");
+  const backdrop = $("sidebarBackdrop");
   if(sidebar) sidebar.classList.remove("open");
+  if(backdrop) backdrop.classList.remove("show");
+
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -285,7 +290,6 @@ function renderStock(){
 function renderChain(){
   const strip = $("chainStrip");
   if(!strip) return;
-  // Mostra as 10 principais etapas ou etapas relevantes para caber no display
   const displayMissions = MISSIONS.slice(0, 15);
   strip.innerHTML = displayMissions.map((m, i) => `
     <div class="chain-step ${state.completed.includes(i) ? "done" : i === activeMissionIndex() ? "" : "locked"}">
@@ -314,7 +318,7 @@ function renderDashboard(){
   if($("heroTitle")) $("heroTitle").innerHTML = isPhase2 ? "Era dos<br><em>chips.</em>" : "Rumo às<br><em>estrelas.</em>";
   if($("heroDesc")) $("heroDesc").textContent = isPhase2 
     ? "A Fase 2 está ativa! Produza chips avançados, núcleos quânticos e domine o mercado intergaláctico." 
-    : "Construa propulsores quânticos e concretize o Módulo Especial VovôBrDias para desbloquear a Fase 2.";
+    : "Construa propulsores quânticos e concretize o Módulo Especial VovôBrDias na Fase 1, antes de avançar para a Fase 2 de Nanofabricação de Chips.";
 
   if(idx < 0){
     if($("nextMissionEyebrow")) $("nextMissionEyebrow").textContent = "IMPÉRIO VOVÔBRDIAS CONSOLIDADO";
@@ -636,7 +640,19 @@ const brandHome = $("brandHome");
 if(brandHome) brandHome.addEventListener("click", e => { e.preventDefault(); changeView("dashboard"); });
 
 const mobileMenu = $("mobileMenu");
-if(mobileMenu) mobileMenu.addEventListener("click", () => $("sidebar").classList.toggle("open"));
+const sidebar = $("sidebar");
+const sidebarBackdrop = $("sidebarBackdrop");
+
+if(mobileMenu && sidebar && sidebarBackdrop) {
+  mobileMenu.addEventListener("click", () => {
+    sidebar.classList.toggle("open");
+    sidebarBackdrop.classList.toggle("show");
+  });
+  sidebarBackdrop.addEventListener("click", () => {
+    sidebar.classList.remove("open");
+    sidebarBackdrop.classList.remove("show");
+  });
+}
 
 ["newGame", "newGameButton", "resetGame"].forEach(id => {
   const btn = $(id);
