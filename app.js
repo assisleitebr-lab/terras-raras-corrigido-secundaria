@@ -21,7 +21,7 @@ if(!playerId){
 }
 
 const MATERIALS = {
-  ore: { name: "Minério bruto", icon: "◆", price: 18, unit: "un.", color: "ore" },
+  ore: { name: "Minério bruto", icon: "◆", price: 1200, unit: "un.", color: "ore" },
   concentrate: { name: "Concentrado mineral", icon: "◈", price: 42, unit: "un.", color: "concentrate" },
   mixed: { name: "Composto misto de terras raras", icon: "◇", price: 75, unit: "un.", color: "mixed" },
   oxide: { name: "Óxido de terras raras", icon: "⬡", price: 125, unit: "un.", color: "oxide" },
@@ -95,7 +95,7 @@ const UPGRADES = [
 
 const DEFAULT_STATE = {
   coins: 15000,
-  stock: { ore: 900, concentrate: 0, mixed: 0, oxide: 0, metal: 0, alloy: 0, magnet: 0, motor: 0, chip: 0, battery: 0, quantum_core: 0, vovo_artifact: 0 },
+  stock: { ore: 1200, concentrate: 0, mixed: 0, oxide: 0, metal: 0, alloy: 0, magnet: 0, motor: 0, chip: 0, battery: 0, quantum_core: 0, vovo_artifact: 0 },
   produced: { concentrate: 0, mixed: 0, oxide: 0, metal: 0, alloy: 0, magnet: 0, motor: 0, chip: 0, battery: 0, quantum_core: 0, vovo_artifact: 0 },
   completed: [],
   production: 0,
@@ -107,7 +107,7 @@ let state = loadState();
 
 function loadState(){
   try{
-    const saved = JSON.parse(localStorage.getItem("terrasRarasSaveProV3_5"));
+    const saved = JSON.parse(localStorage.getItem("terrasRarasSaveProV3_6"));
     if(saved){
       return {
         ...structuredClone(DEFAULT_STATE),
@@ -149,7 +149,7 @@ async function loadFromCloud(){
         completed: Array.isArray(cloudData.completed) ? cloudData.completed : [],
         upgrades: Array.isArray(cloudData.upgrades) ? cloudData.upgrades : []
       };
-      localStorage.setItem("terrasRarasSaveProV3_5", JSON.stringify(state));
+      localStorage.setItem("terrasRarasSaveProV3_6", JSON.stringify(state));
       renderAll();
       toast("Progresso sincronizado do Firebase com sucesso!");
     }
@@ -160,7 +160,7 @@ async function loadFromCloud(){
 
 function save(){
   try{
-    localStorage.setItem("terrasRarasSaveProV3_5", JSON.stringify(state));
+    localStorage.setItem("terrasRarasSaveProV3_6", JSON.stringify(state));
     saveToCloud(state);
   }catch(e){}
   renderAll();
