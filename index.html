@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#070d18">
-  <meta name="description" content="Simulador educativo de terras raras com Firebase e Expansão O Legado de VovôBrDias.">
-  <title>Terras Raras | Mining Industry (Pro v3.1)</title>
+  <meta name="description" content="Simulador educativo de terras raras com Fase 2 de Chips, Firebase e Expansão O Legado de VovôBrDias.">
+  <title>Terras Raras | Mining Industry (Pro v3.2 - Fase 2)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -33,12 +33,12 @@
         <div class="help-box">
           <span class="help-icon">i</span>
           <div>
-            <strong>Firebase & VovôBrDias</strong>
-            <p>Dados salvos com segurança em nuvem e controles blindados.</p>
+            <strong>Fase 2 · Chips & Império</strong>
+            <p>Novas missões de nanofabricação e tecnologia quântica ativadas!</p>
           </div>
         </div>
         <button class="reset-link" id="resetGame" type="button">↻ Começar nova partida</button>
-        <small class="version">PROFISSIONAL v3.1 · FIREBASE CLOUD</small>
+        <small class="version">PROFISSIONAL v3.2 · FASE 2</small>
       </div>
     </aside>
 
@@ -61,7 +61,7 @@
           <span class="audio-symbol">🔊</span>
           <div>
             <strong>Assistente de voz inteligente</strong>
-            <small id="audioStatus">Pronto para ler instruções e relatórios em voz alta.</small>
+            <small id="audioStatus">Pronto para ler instruções da Fase 1 e Fase 2.</small>
           </div>
         </div>
         <div class="audio-actions">
@@ -75,9 +75,9 @@
       <section class="view active" id="view-dashboard">
         <div class="welcome-row">
           <div>
-            <div class="eyebrow"><span class="live-dot"></span> CENTRO DE COMANDO · O LEGADO DE VOVÔBRDIAS</div>
+            <div class="eyebrow"><span class="live-dot"></span> CENTRO DE COMANDO · FASE 2 & VOVÔBRDIAS</div>
             <h1>Bom trabalho, <span>Diretor.</span></h1>
-            <p>Sua liderança consolidou a infraestrutura de terras raras na vanguarda da tecnologia espacial.</p>
+            <p>Sua liderança abriu as portas para a Fase 2: Nanofabricação de Chips e Domínio Quântico.</p>
           </div>
           <div class="welcome-actions">
             <div class="date-chip">◷ <span id="todayLabel">Simulação em andamento</span></div>
@@ -87,18 +87,18 @@
 
         <div class="hero-banner">
           <div class="hero-copy">
-            <span class="hero-kicker">FASE ESPACIAL & HOMENAGEM SUPREMA</span>
-            <h2>Rumo às<br><em>estrelas.</em></h2>
-            <p>Construa propulsores quânticos e concretize o Módulo Especial VovôBrDias.</p>
+            <span class="hero-kicker" id="heroKicker">FASE 1 · INFRAESTRUTURA INDUSTRIAL</span>
+            <h2 id="heroTitle">Rumo às<br><em>estrelas.</em></h2>
+            <p id="heroDesc">Construa propulsores quânticos e concretize o Módulo Especial VovôBrDias na Fase 1, antes de avançar para a Fase 2 de Nanofabricação de Chips.</p>
             <button class="btn btn-light" type="button" data-goto="missions">Continuar missão <span>→</span></button>
           </div>
           <div class="hero-scene" id="heroScene" aria-hidden="true"></div>
-          <div class="hero-index" id="heroIndex">01 <span>/ 15</span></div>
+          <div class="hero-index" id="heroIndex">01 <span>/ 20</span></div>
         </div>
 
         <div class="section-heading">
           <div><span class="eyebrow">INDICADORES DE PERFORMANCE</span><h2>Painel operacional</h2></div>
-          <span class="updated-label"><span class="live-dot" style="background:#22c55e"></span> Sincronizado Firebase</span>
+          <span class="updated-label"><span class="live-dot" style="background:#22c55e"></span> Sincronizado Firebase · Fase 2 Ativa</span>
         </div>
 
         <div class="stat-grid">
@@ -119,8 +119,8 @@
           </article>
           <article class="stat-card">
             <div class="stat-top"><span>Missões concluídas</span><span class="stat-icon purple">✦</span></div>
-            <strong id="statMissions">0 <small>/ 15</small></strong>
-            <div class="stat-foot">Progresso da cadeia</div>
+            <strong id="statMissions">0 <small>/ 20</small></strong>
+            <div class="stat-foot">Progresso total (Fase 1 & 2)</div>
           </article>
         </div>
 
@@ -153,7 +153,7 @@
         </div>
 
         <div class="section-heading lower-heading">
-          <div><span class="eyebrow">LINHA DO TEMPO INDUSTRIAL</span><h2>Etapas da cadeia produtiva</h2></div>
+          <div><span class="eyebrow">LINHA DO TEMPO INDUSTRIAL & FASE 2</span><h2>Etapas da cadeia produtiva</h2></div>
           <button class="text-button" type="button" data-goto="missions">Ver todas →</button>
         </div>
         <div class="chain-strip" id="chainStrip"></div>
@@ -162,12 +162,12 @@
       <!-- VIEW: MISSIONS -->
       <section class="view" id="view-missions">
         <div class="page-intro">
-          <span class="eyebrow">PROGRESSÃO E TAREFAS</span>
+          <span class="eyebrow">PROGRESSÃO E TAREFAS · FASE 1 & FASE 2</span>
           <h1>Central de <span>missões</span></h1>
-          <p>Conclua cada etapa industrial e científica para avançar até o Módulo Espacial VovôBrDias.</p>
+          <p>Conclua a Fase 1 industrial e desbloqueie a Fase 2 focada em fabricação massiva de chips e império quântico!</p>
         </div>
         <div class="mission-summary">
-          <div><strong id="missionSummaryCount">0/15</strong><span>missões concluídas</span></div>
+          <div><strong id="missionSummaryCount">0/20</strong><span>missões concluídas</span></div>
           <div class="wide-progress">
             <div class="progress-track"><span id="allMissionProgress" style="width:0%"></span></div>
             <small id="allMissionPercent">0% concluído</small>
@@ -183,7 +183,7 @@
         <div class="page-intro">
           <span class="eyebrow">PARQUE FABRIL</span>
           <h1>Centro de <span>produção</span></h1>
-          <p>Selecione uma linha produtiva para refinar insumos, fabricar alta tecnologia e montar artefatos espaciais.</p>
+          <p>Selecione uma linha produtiva para refinar insumos, fabricar chips avançados e montar artefatos espaciais.</p>
         </div>
         <div class="production-layout">
           <div class="production-main">
@@ -212,13 +212,13 @@
         <div class="page-intro">
           <span class="eyebrow">BOLSA DE COMMODITIES</span>
           <h1>Mercado de <span>materiais</span></h1>
-          <p>Comercialize seus produtos refinados por cotações competitivas e gere capital para expansões.</p>
+          <p>Comercialize seus produtos refinados e chips de alta precisão por cotações competitivas.</p>
         </div>
         <div class="market-banner">
           <div>
             <span class="eyebrow">SETOR COMERCIAL</span>
             <h2>Converta produção em liquidez.</h2>
-            <p>Cotações atreladas à demanda internacional de terras raras e eletrônicos.</p>
+            <p>Cotações atreladas à demanda internacional de terras raras e semicondutores.</p>
           </div>
           <div class="market-symbol">↗</div>
         </div>
@@ -236,7 +236,7 @@
       </section>
 
       <footer class="footer">
-        <span>© 2026 TERRAS RARAS · MINING INDUSTRY (Expansão VovôBrDias & Firebase)</span>
+        <span>© 2026 TERRAS RARAS · MINING INDUSTRY (Fase 2 Chips & VovôBrDias)</span>
         <span>Simulação industrial e espacial avançada.</span>
       </footer>
     </main>
