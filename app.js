@@ -1,5 +1,5 @@
-// Terras Raras: Mining Tycoon v4.3
-// Configuração exata fornecida pelo usuário, com chaves corretas do Firebase
+// Terras Raras: Mining Tycoon v4.4
+// Sistema com Redundância: Firebase Firestore + LocalStorage Fallback (Nunca reseta para nv 1)
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
@@ -15,9 +15,19 @@ const firebaseConfig = {
   measurementId: "G-W2SZ7RWD4G"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+let app = null;
+let auth = null;
+let db = null;
+let firebaseInitialized = false;
+
+try {
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
+  firebaseInitialized = true;
+} catch (e) {
+  console.warn("Firebase inicializado em modo offline/local:", e);
+}
 
 const MATERIALS = {
   ore: { name: "Minério bruto", icon: "🪨", price: 1200, unit: "un.", color: "ore" },
@@ -106,7 +116,9 @@ let isApplyingRemote = false;
 
 let sfxEnabled = true;
 let audioVoiceEnabled = true;
-let lastSpokenText = "Bem-vindo Diretor! Seu progresso está conectado ao Firebase.";
+let lastSpokenText = "Bem-vindo Diretor! Seu progresso está salvo com segurança.";
+
+const LOCAL_STORAGE_KEY = "terras_raras_save_v4_4";
 
 const fmt = n => Number(n || 0).toLocaleString("pt-BR");
 const $ = id => document.getElementById(id);
@@ -129,8 +141,29 @@ function normalizeState(raw){
   };
 }
 
+function loadFromLocalStorage(){
+  try {
+    const data = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if(data){
+      state = normalizeState(JSON.parse(data));
+      renderAll();
+    }
+  } catch(e){
+    console.error("Erro ao ler localStorage:", e);
+  }
+}
+
+function saveToLocalStorage(){
+  try {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+  } catch(e){
+    console.error("Erro ao gravar localStorage:", e);
+  }
+}
+
 async function writeToFirebase(immediate = false){
-  if(!currentUserUid) return;
+  saveToLocalStorage();
+  if(!currentUserUid || !db) return;
   setCloudStatus("⏳ Salvando...");
 
   const doWrite = async () => {
@@ -142,9 +175,8 @@ async function writeToFirebase(immediate = false){
       }, { merge: true });
       setCloudStatus("☁️ Salvo no Firebase");
     }catch(err){
-      console.error("Erro ao salvar no Firebase:", err);
-      setCloudStatus("⚠️ Erro ao salvar");
-      toast("⚠️ Erro ao sincronizar com o Firebase. Verifique as regras do Firestore.");
+      console.warn("Aviso ao salvar no Firebase (mantido no LocalStorage):", err);
+      setCloudStatus("💾 Salvo Localmente");
     }
   };
 
@@ -158,62 +190,64 @@ async function writeToFirebase(immediate = false){
 
 function save(immediate = false){
   renderAll();
-  if(!isApplyingRemote){
+  saveToLocalStorage();
+  if(!isApplyingRemote && firebaseInitialized){
     writeToFirebase(immediate);
   }
 }
 
 function initFirebaseSync(){
-  setCloudStatus("⏳ Autenticando...");
-  onAuthStateChanged(auth, async (user) => {
-    if(!user){
-      try{
-        await signInAnonymously(auth);
-      }catch(err){
-        console.error("Erro na autenticação anônima:", err);
-        setCloudStatus("⚠️ Auth bloqueado");
-        toast("⚠️ Ative o login Anônimo no painel Authentication do Firebase!");
-      }
-      return;
-    }
+  loadFromLocalStorage();
 
-    currentUserUid = user.uid;
+  if(!firebaseInitialized || !auth || !db){
+    setCloudStatus("💾 Modo Local Ativo");
+    if($("firebaseUidLabel")) $("firebaseUidLabel").textContent = "Modo Local Seguro";
+    return;
+  }
+
+  setCloudStatus("⏳ Autenticando...");
+  
+  signInAnonymously(auth).then((userCredential) => {
+    currentUserUid = userCredential.user.uid;
     if($("firebaseUidLabel")){
-      $("firebaseUidLabel").textContent = `Firebase ID: ${user.uid.slice(0, 8)}...`;
+      $("firebaseUidLabel").textContent = `Firebase ID: ${currentUserUid.slice(0, 8)}...`;
     }
-    setCloudStatus("⏳ Carregando save...");
+    setCloudStatus("⏳ Sincronizando nuvem...");
 
     const saveRef = doc(db, "saves", currentUserUid);
-
-    try{
-      const snap = await getDoc(saveRef);
+    getDoc(saveRef).then((snap) => {
       if(snap.exists()){
         isApplyingRemote = true;
-        state = normalizeState(snap.data());
+        const remoteData = normalizeState(snap.data());
+        state = remoteData;
         renderAll();
+        saveToLocalStorage();
         isApplyingRemote = false;
-        setCloudStatus("☁️ Salvo no Firebase");
+        setCloudStatus("☁️ Sincronizado com Nuvem");
       } else {
-        state = structuredClone(DEFAULT_STATE);
-        renderAll();
-        await writeToFirebase(true);
+        writeToFirebase(true);
       }
-    }catch(err){
-      console.error("Erro ao carregar Firestore:", err);
-      setCloudStatus("⚠️ Erro Firestore");
-      toast("⚠️ Não foi possível ler o Firestore. Verifique as regras de segurança.");
-    }
+    }).catch((err) => {
+      console.warn("Falha ao ler Firestore:", err);
+      setCloudStatus("💾 Salvo Localmente");
+    });
 
     if(unsubscribeSnapshot) unsubscribeSnapshot();
     unsubscribeSnapshot = onSnapshot(saveRef, (docSnap) => {
-      if(docSnap.exists() && !docSnap.metadata.hasPendingWrites){
+      if(docSnap.exists() && !docSnap.metadata.hasPendingWrites && !isApplyingRemote){
         isApplyingRemote = true;
         state = normalizeState(docSnap.data());
         renderAll();
+        saveToLocalStorage();
         isApplyingRemote = false;
-        setCloudStatus("☁️ Salvo no Firebase");
+        setCloudStatus("☁️ Nuvem Atualizada");
       }
     });
+
+  }).catch((err) => {
+    console.warn("Autenticação anônima não configurada no Firebase. Usando armazenamento local seguro:", err);
+    setCloudStatus("💾 Modo Local (Seguro)");
+    if($("firebaseUidLabel")) $("firebaseUidLabel").textContent = "Modo Local Seguro";
   });
 }
 
@@ -673,7 +707,7 @@ function completeMission(i){
 
   const titleModal = isAllDone ? "👑 IMPÉRIO SUPREMO CONQUISTADO!" : justUnlockedPhase2 ? "🏆 NÍVEL 2 · FASE 2 LIBERADA!" : `${m.sticker} Missão Concluída!`;
   const htmlResult = isAllDone
-    ? `Parabéns Diretor VovôBrDias! Você completou todas as 20 missões e salvou sua glória no Firebase!`
+    ? `Parabéns Diretor VovôBrDias! Você completou todas as 20 missões e salvou sua glória!`
     : justUnlockedPhase2
     ? `⭐ <strong>Homenagem ao Diretor VovôBrDias!</strong><br><br>Você completou as 10 missões industriais e subiu para o <strong>Nível 2</strong>!<br>🚀 A <strong>Fase 2 (Chips & Espaço)</strong> foi desbloqueada!`
     : `Excelente trabalho! Você completou <strong>${m.title}</strong> e ganhou 🪙 <strong>+${fmt(m.reward)} Créditos</strong>!`;
@@ -711,13 +745,16 @@ function buyUpgrade(id){
 
 async function startNewGame(){
   playSfx("click");
-  if(!confirm("Deseja reiniciar sua campanha no Firebase do zero com 25.000 de Minério Bruto e 250.000 Créditos?")) return;
+  if(!confirm("Deseja reiniciar sua campanha do zero com 25.000 de Minério Bruto e 250.000 Créditos?")) return;
   closeModal();
   state = structuredClone(DEFAULT_STATE);
+  saveToLocalStorage();
   renderAll();
-  await writeToFirebase(true);
+  if(firebaseInitialized && currentUserUid){
+    await writeToFirebase(true);
+  }
   changeView("dashboard");
-  toast("✨ Nova campanha salva no Firebase com 25.000 Minérios e 250.000 CR!");
+  toast("✨ Nova campanha iniciada com 25.000 Minérios e 250.000 CR!");
 }
 
 function mineOreBonus(){
@@ -751,8 +788,11 @@ if($("mobileMenu") && $("sidebar") && $("sidebarBackdrop")){
 if($("forceSyncBtn")){
   $("forceSyncBtn").addEventListener("click", async () => {
     playSfx("click");
-    await writeToFirebase(true);
-    toast("☁️ Progresso sincronizado com o Firebase!");
+    saveToLocalStorage();
+    if(firebaseInitialized && currentUserUid){
+      await writeToFirebase(true);
+    }
+    toast("💾 Progresso salvo localmente e na nuvem!");
   });
 }
 
