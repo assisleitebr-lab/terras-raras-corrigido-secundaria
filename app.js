@@ -1,100 +1,177 @@
-const MATERIALS = {
-  ore:{name:"Minério bruto",icon:"◆",price:18,unit:"un."},
-  concentrate:{name:"Concentrado mineral",icon:"◈",price:42,unit:"un."},
-  mixed:{name:"Composto misto de terras raras",icon:"◇",price:75,unit:"un."},
-  oxide:{name:"Óxido de terras raras",icon:"⬡",price:125,unit:"un."},
-  metal:{name:"Metal de neodímio",icon:"▰",price:210,unit:"un."},
-  alloy:{name:"Liga NdFeB",icon:"▣",price:330,unit:"un."},
-  magnet:{name:"Ímã permanente NdFeB",icon:"✥",price:520,unit:"un."},
-  motor:{name:"Componente para motor elétrico",icon:"⚙",price:850,unit:"un."}
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDXKVUV6DnlkWuozFp57rl6M1K-0iXHIjk",
+  authDomain: "terras-rara-v1-pro.firebaseapp.com",
+  projectId: "terras-rara-v1-pro",
+  storageBucket: "terras-rara-v1-pro.firebasestorage.app",
+  messagingSenderId: "737526391829",
+  appId: "1:737526391829:web:493ee03146bbf97eaf5a1c",
+  measurementId: "G-W2SZ7RWD4G"
 };
 
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
+
+let playerId = localStorage.getItem("terrasRarasPlayerId");
+if(!playerId){
+  playerId = "player_" + Math.random().toString(36).substring(2, 15);
+  localStorage.setItem("terrasRarasPlayerId", playerId);
+}
+
+const MATERIALS = {
+  ore: { name: "Minério bruto", icon: "◆", price: 18, unit: "un.", color: "ore" },
+  concentrate: { name: "Concentrado mineral", icon: "◈", price: 42, unit: "un.", color: "concentrate" },
+  mixed: { name: "Composto misto de terras raras", icon: "◇", price: 75, unit: "un.", color: "mixed" },
+  oxide: { name: "Óxido de terras raras", icon: "⬡", price: 125, unit: "un.", color: "oxide" },
+  metal: { name: "Metal de neodímio", icon: "▰", price: 210, unit: "un.", color: "metal" },
+  alloy: { name: "Liga NdFeB", icon: "▣", price: 330, unit: "un.", color: "alloy" },
+  magnet: { name: "Ímã permanente NdFeB", icon: "✥", price: 520, unit: "un.", color: "magnet" },
+  motor: { name: "Componente para motor elétrico", icon: "⚙", price: 850, unit: "un.", color: "motor" },
+  chip: { name: "Chip eletrônico de alta precisão", icon: "❖", price: 1650, unit: "un.", color: "chip" },
+  battery: { name: "Bateria de estado sólido", icon: "⚡", price: 2800, unit: "un.", color: "battery" },
+  quantum_core: { name: "Núcleo de propulsão magnética", icon: "⚛", price: 4500, unit: "un.", color: "quantum" },
+  vovo_artifact: { name: "Módulo Espacial VovôBrDias", icon: "🚀", price: 10000, unit: "un.", color: "artifact" }
+};
+
+function matBadge(id){
+  const m = MATERIALS[id];
+  if(!m) return "";
+  return `<span class="mat-badge mat-${m.color}">${m.icon} ${m.name}</span>`;
+}
+
 const MISSIONS = [
-  {title:"Extração mineral",desc:"Inicie a operação da jazida e extraia seu primeiro lote de minério.",detail:"A mineração começa com a lavra do corpo mineral, seguida do carregamento e transporte do minério até a unidade de processamento.",goal:"ore",target:50,reward:1200,stage:"Lavra"},
-  {title:"Britagem e moagem",desc:"Reduza o tamanho das rochas para liberar os minerais de interesse.",detail:"Britadores e moinhos diminuem a granulometria do minério. O tamanho adequado das partículas ajuda a liberar os minerais que serão concentrados.",goal:"concentrate",target:20,reward:1500,stage:"Cominuição"},
-  {title:"Beneficiamento mineral",desc:"Concentre os minerais portadores de terras raras.",detail:"Operações físicas, como classificação, separação magnética e/ou flotação, podem elevar o teor dos minerais de interesse antes do tratamento químico.",goal:"mixed",target:12,reward:1800,stage:"Concentração"},
-  {title:"Processamento químico",desc:"Faça o tratamento do concentrado para obter óxidos de terras raras.",detail:"Rotas hidrometalúrgicas podem envolver lixiviação e etapas de purificação. A rota adequada depende da mineralogia e da composição do concentrado.",goal:"oxide",target:4,reward:2200,stage:"Hidrometalurgia"},
-  {title:"Separação dos elementos",desc:"Avance no fracionamento dos elementos de terras raras.",detail:"Como os elementos possuem propriedades químicas muito semelhantes, a separação industrial costuma exigir várias etapas, frequentemente com extração por solventes ou troca iônica.",goal:"oxide",target:10,reward:2600,stage:"Separação"},
-  {title:"Produção de óxidos",desc:"Amplie a produção de óxidos individuais de terras raras.",detail:"Após purificação e precipitação, os produtos podem ser calcinados para formar óxidos, como óxido de neodímio e óxido de praseodímio.",goal:"oxide",target:20,reward:3000,stage:"Óxidos"},
-  {title:"Refino e obtenção dos metais",desc:"Transforme óxidos selecionados em metais.",detail:"A obtenção de metais de terras raras pode envolver processos metalúrgicos específicos, como redução metalotérmica ou eletrólise de sais fundidos.",goal:"metal",target:10,reward:3500,stage:"Metalurgia"},
-  {title:"Fabricação de ligas metálicas",desc:"Produza uma liga adequada à fabricação de ímãs permanentes.",detail:"Ligas para ímãs NdFeB utilizam principalmente neodímio (ou praseodímio), ferro e boro. A formulação e o processamento influenciam o desempenho magnético.",goal:"alloy",target:8,reward:4200,stage:"Ligas"},
-  {title:"Produção de ímãs permanentes",desc:"Fabrique ímãs permanentes de neodímio-ferro-boro.",detail:"A fabricação de ímãs NdFeB envolve preparação da liga, moagem, alinhamento do pó, compactação, sinterização e tratamentos posteriores.",goal:"magnet",target:5,reward:5000,stage:"Ímãs"},
-  {title:"Aplicação industrial",desc:"Forneça componentes magnéticos para aplicações tecnológicas.",detail:"Ímãs permanentes de alto desempenho são utilizados em motores elétricos, geradores eólicos, automação e diversos equipamentos tecnológicos.",goal:"motor",target:3,reward:7000,stage:"Tecnologia"}
+  { title: "Extração mineral", desc: "Inicie a operação da jazida e extraia seu primeiro lote de minério.", detail: "A mineração começa com a lavra do corpo mineral e transporte do minério.", goal: "ore", target: 50, reward: 1200, stage: "Lavra" },
+  { title: "Britagem e moagem", desc: "Reduza o tamanho das rochas para liberar os minerais de interesse.", detail: "Britadores e moinhos diminuem a granulometria do minério.", goal: "concentrate", target: 20, reward: 1500, stage: "Cominuição" },
+  { title: "Beneficiamento mineral", desc: "Concentre os minerais portadores de terras raras.", detail: "Operações físicas como separação magnética elevam o teor dos minerais.", goal: "mixed", target: 12, reward: 1800, stage: "Concentração" },
+  { title: "Processamento químico", desc: "Faça o tratamento do concentrado para obter óxidos de terras raras.", detail: "Rotas hidrometalúrgicas envolvem lixiviação e purificação.", goal: "oxide", target: 4, reward: 2200, stage: "Hidrometalurgia" },
+  { title: "Separação dos elementos", desc: "Avance no fracionamento dos elementos de terras raras.", detail: "A separação individual exige extração por solventes.", goal: "oxide", target: 10, reward: 2600, stage: "Separação" },
+  { title: "Produção de óxidos", desc: "Amplie a produção de óxidos individuais de terras raras.", detail: "Óxidos como neodímio e praseodímio calcinados.", goal: "oxide", target: 20, reward: 3000, stage: "Óxidos" },
+  { title: "Refino e obtenção dos metais", desc: "Transforme óxidos selecionados em metais.", detail: "Obtenção de metais por redução metalotérmica.", goal: "metal", target: 10, reward: 3500, stage: "Metalurgia" },
+  { title: "Fabricação de ligas metálicas", desc: "Produza uma liga adequada à fabricação de ímãs permanentes.", detail: "Ligas NdFeB utilizam neodímio, ferro e boro.", goal: "alloy", target: 8, reward: 4200, stage: "Ligas" },
+  { title: "Produção de ímãs permanentes", desc: "Fabrique ímãs permanentes de neodímio-ferro-boro.", detail: "Compactação, sinterização e tratamentos posteriores.", goal: "magnet", target: 5, reward: 5000, stage: "Ímãs" },
+  { title: "Aplicação industrial", desc: "Forneça componentes magnéticos para aplicações tecnológicas.", detail: "Ímãs de alto desempenho em motores elétricos e geradores.", goal: "motor", target: 3, reward: 7000, stage: "Tecnologia" },
+  { title: "Microeletrônica avançada", desc: "Integre motores e óxidos para fabricar chips de alta precisão.", detail: "Semicondutores essenciais para automação avançada.", goal: "chip", target: 3, reward: 9500, stage: "Microeletrônica" },
+  { title: "Armazenamento de alta densidade", desc: "Fabrique baterias de estado sólido com ligas e óxidos purificados.", detail: "Armazenamento energético de altíssima eficiência.", goal: "battery", target: 2, reward: 12000, stage: "Energia" },
+  { title: "Propulsão de alta performance", desc: "Desenvolva o núcleo de propulsão magnética para veículos espaciais.", detail: "Combina motores elétricos e chips avançados.", goal: "quantum_core", target: 2, reward: 16000, stage: "Propulsão" },
+  { title: "Projeto Especial Aurora", desc: "Monte o protótipo inicial da espaçonave de exploração.", detail: "Integração de baterias, núcleos quânticos e ligas especiais.", goal: "vovo_artifact", target: 1, reward: 25000, stage: "Exploração" },
+  { title: "O Legado de VovôBrDias", desc: "Conclua a frota espacial definitiva e eternize o nome do Diretor!", detail: "A fase suprema da indústria de terras raras dedicada ao grande Diretor VovôBrDias.", goal: "vovo_artifact", target: 3, reward: 50000, stage: "O Legado" }
 ];
 
 const PROCESSES = [
-  {id:"crush",title:"Britagem e moagem",icon:"⚒",desc:"Reduz o tamanho do minério para liberar os minerais.",input:"ore",qty:10,output:"concentrate",out:5,cost:120,unlock:0,mission:1,learn:"Na prática, a cominuição prepara o minério para as etapas de concentração."},
-  {id:"benefit",title:"Beneficiamento",icon:"◈",desc:"Concentra os minerais de interesse por métodos físicos.",input:"concentrate",qty:5,output:"mixed",out:3,cost:180,unlock:1,mission:2,learn:"A recuperação e o teor do concentrado dependem da mineralogia e da rota escolhida."},
-  {id:"chem",title:"Processamento químico",icon:"⚗",desc:"Trata o concentrado e prepara a solução para purificação.",input:"mixed",qty:4,output:"oxide",out:2,cost:260,unlock:2,mission:3,learn:"A lixiviação transfere os elementos de interesse para uma solução; depois vêm purificação e precipitação."},
-  {id:"separate",title:"Separação e purificação",icon:"⇄",desc:"Separa e purifica os elementos de terras raras.",input:"oxide",qty:3,output:"oxide",out:5,cost:380,unlock:4,mission:4,learn:"A separação individual é complexa porque os elementos têm comportamentos químicos parecidos."},
-  {id:"metal",title:"Redução e refino",icon:"♨",desc:"Obtém metal a partir do óxido selecionado.",input:"oxide",qty:3,output:"metal",out:2,cost:520,unlock:5,mission:6,learn:"Nem todo óxido é reduzido pela mesma rota; o processo depende do elemento e da aplicação."},
-  {id:"alloy",title:"Produção de ligas",icon:"▣",desc:"Combina metais e elementos de liga para formar NdFeB.",input:"metal",qty:3,output:"alloy",out:2,cost:700,unlock:6,mission:7,learn:"A liga NdFeB combina neodímio/praseodímio, ferro e boro em composição controlada."},
-  {id:"magnet",title:"Fabricação de ímãs",icon:"✥",desc:"Processa a liga para produzir ímãs permanentes.",input:"alloy",qty:2,output:"magnet",out:1,cost:900,unlock:7,mission:8,learn:"O processo pode incluir moagem, alinhamento, compactação, sinterização e usinagem."},
-  {id:"motor",title:"Componente industrial",icon:"⚙",desc:"Integra os ímãs em componentes para motores elétricos.",input:"magnet",qty:2,output:"motor",out:1,cost:1200,unlock:8,mission:9,learn:"Motores de ímãs permanentes convertem energia elétrica em movimento com alta densidade de potência."}
+  { id: "crush", title: "Britagem e moagem", icon: "⚒", desc: "Reduz o tamanho do minério para liberar os minerais.", input: "ore", qty: 10, output: "concentrate", out: 5, cost: 120, unlock: 0, mission: 1, learn: "Na prática, a cominuição prepara o minério para as etapas de concentração." },
+  { id: "benefit", title: "Beneficiamento", icon: "◈", desc: "Concentra os minerais de interesse por métodos físicos.", input: "concentrate", qty: 5, output: "mixed", out: 3, cost: 180, unlock: 1, mission: 2, learn: "A recuperação e o teor do concentrado dependem da mineralogia e da rota escolhida." },
+  { id: "chem", title: "Processamento químico", icon: "⚗", desc: "Trata o concentrado e prepara a solução para purificação.", input: "mixed", qty: 4, output: "oxide", out: 2, cost: 260, unlock: 2, mission: 3, learn: "A lixiviação transfere os elementos de interesse para uma solução." },
+  { id: "separate", title: "Separação e purificação", icon: "⇄", desc: "Separa e purifica os elementos de terras raras.", input: "oxide", qty: 3, output: "oxide", out: 5, cost: 380, unlock: 4, mission: 4, learn: "A separação individual é complexa devido à similaridade química." },
+  { id: "metal", title: "Redução e refino", icon: "♨", desc: "Obtém metal a partir do óxido selecionado.", input: "oxide", qty: 3, output: "metal", out: 2, cost: 520, unlock: 5, mission: 6, learn: "Processo metalúrgico de redução para obtenção de metal puro." },
+  { id: "alloy", title: "Produção de ligas", icon: "▣", desc: "Combina metais e elementos de liga para formar NdFeB.", input: "metal", qty: 3, output: "alloy", out: 2, cost: 700, unlock: 6, mission: 7, learn: "A liga NdFeB combina neodímio, ferro e boro." },
+  { id: "magnet", title: "Fabricação de ímãs", icon: "✥", desc: "Processa a liga para produzir ímãs permanentes.", input: "alloy", qty: 2, output: "magnet", out: 1, cost: 900, unlock: 7, mission: 8, learn: "Envolve alinhamento de pó, compactação e sinterização." },
+  { id: "motor", title: "Componente industrial", icon: "⚙", desc: "Integra os ímãs em componentes para motores elétricos.", input: "magnet", qty: 2, output: "motor", out: 1, cost: 1200, unlock: 8, mission: 9, learn: "Motores de alta densidade de potência." },
+  { id: "chip", title: "Fabricação de chip eletrônico", icon: "❖", desc: "Integra elementos de terras raras em microcomponentes.", input: "motor", qty: 1, extraInput: "oxide", extraQty: 2, output: "chip", out: 1, cost: 1800, unlock: 10, mission: 10, learn: "Essencial em semicondutores e telas avançadas." },
+  { id: "battery", title: "Bateria de estado sólido", icon: "⚡", desc: "Fabrica baterias de alta densidade energética para veículos avançados.", input: "alloy", qty: 2, extraInput: "oxide", extraQty: 2, output: "battery", out: 1, cost: 2500, unlock: 11, mission: 11, learn: "Baterias avançadas usando compostos de terras raras." },
+  { id: "quantum_core", title: "Núcleo magnético quântico", icon: "⚛", desc: "Cria o propulsor magnético para espaçonaves.", input: "motor", qty: 2, extraInput: "chip", extraQty: 1, output: "quantum_core", out: 1, cost: 4000, unlock: 12, mission: 12, learn: "Tecnologia de propulsão avançada." },
+  { id: "vovo_artifact", title: "Módulo Espacial VovôBrDias", icon: "🚀", desc: "Montagem do artefato supremo em homenagem ao Diretor VovôBrDias!", input: "quantum_core", qty: 1, extraInput: "battery", extraQty: 2, output: "vovo_artifact", out: 1, cost: 8000, unlock: 13, mission: 13, isFinalProject: true, learn: "O ápice da tecnologia industrial e espacial da Mineradora Aurora, eternizando o Diretor VovôBrDias!" }
 ];
 
 const UPGRADES = [
-  {id:"crusher",name:"Britador de mandíbulas",icon:"⚒",desc:"Melhora a capacidade de britagem e reduz o custo operacional.",cost:1800,eff:5},
-  {id:"mill",name:"Moinho industrial",icon:"⚙",desc:"Aumenta a eficiência de moagem e preparação do minério.",cost:2600,eff:8},
-  {id:"separator",name:"Unidade de separação",icon:"⇄",desc:"Aprimora a capacidade de purificação e separação.",cost:4200,eff:12},
-  {id:"lab",name:"Laboratório de controle",icon:"⚗",desc:"Melhora o controle de qualidade e o rendimento da fábrica.",cost:5500,eff:10},
-  {id:"automation",name:"Automação industrial",icon:"▦",desc:"Otimiza operações e reduz custos de processamento.",cost:8000,eff:18},
-  {id:"plant",name:"Expansão da planta",icon:"▤",desc:"Amplia a capacidade global de produção.",cost:12000,eff:25}
+  { id: "crusher", name: "Britador de mandíbulas", icon: "⚒", desc: "Melhora a capacidade de britagem e reduz custo operacional.", cost: 1800, eff: 5 },
+  { id: "mill", name: "Moinho industrial", icon: "⚙", desc: "Aumenta a eficiência de moagem.", cost: 2600, eff: 8 },
+  { id: "separator", name: "Unidade de separação", icon: "⇄", desc: "Aprimora a capacidade de purificação.", cost: 4200, eff: 12 },
+  { id: "lab", name: "Laboratório de controle", icon: "⚗", desc: "Melhora o controle de qualidade e rendimento.", cost: 5500, eff: 10 },
+  { id: "automation", name: "Automação industrial", icon: "▦", desc: "Otimiza operações e reduz custos.", cost: 8000, eff: 18 },
+  { id: "plant", name: "Expansão da planta", icon: "▤", desc: "Amplia a capacidade global de produção.", cost: 12000, eff: 25 },
+  { id: "space_hub", name: "Central Espacial VovôBrDias", icon: "🛰", desc: "Tecnologia orbital para suporte à fase espacial.", cost: 25000, eff: 35 }
 ];
 
 const DEFAULT_STATE = {
-  coins:10000,
-  stock:{ore:300,concentrate:0,mixed:0,oxide:0,metal:0,alloy:0,magnet:0,motor:0},
-  produced:{concentrate:0,mixed:0,oxide:0,metal:0,alloy:0,magnet:0,motor:0},
-  completed:[],
-  production:0,
-  upgrades:[],
-  company:"Mineradora Aurora"
+  coins: 15000,
+  stock: { ore: 300, concentrate: 0, mixed: 0, oxide: 0, metal: 0, alloy: 0, magnet: 0, motor: 0, chip: 0, battery: 0, quantum_core: 0, vovo_artifact: 0 },
+  produced: { concentrate: 0, mixed: 0, oxide: 0, metal: 0, alloy: 0, magnet: 0, motor: 0, chip: 0, battery: 0, quantum_core: 0, vovo_artifact: 0 },
+  completed: [],
+  production: 0,
+  upgrades: [],
+  company: "Mineradora Aurora (VovôBrDias)"
 };
 
 let state = loadState();
 
 function loadState(){
   try{
-    const saved = JSON.parse(localStorage.getItem("terrasRarasSave"));
+    const saved = JSON.parse(localStorage.getItem("terrasRarasSaveProV3"));
     if(saved){
       return {
         ...structuredClone(DEFAULT_STATE),
         ...saved,
-        stock:{...DEFAULT_STATE.stock,...(saved.stock||{})},
-        produced:{...DEFAULT_STATE.produced,...(saved.produced||{})},
-        completed:Array.isArray(saved.completed)?saved.completed:[],
-        upgrades:Array.isArray(saved.upgrades)?saved.upgrades:[]
+        stock: { ...DEFAULT_STATE.stock, ...(saved.stock || {}) },
+        produced: { ...DEFAULT_STATE.produced, ...(saved.produced || {}) },
+        completed: Array.isArray(saved.completed) ? saved.completed : [],
+        upgrades: Array.isArray(saved.upgrades) ? saved.upgrades : []
       };
     }
   }catch(e){}
   return structuredClone(DEFAULT_STATE);
 }
 
+async function saveToCloud(currentState){
+  try{
+    const docRef = doc(db, "users", playerId);
+    await setDoc(docRef, { ...currentState, updatedAt: new Date().toISOString() });
+    const statusEl = document.getElementById("cloudSyncStatus");
+    if(statusEl) statusEl.textContent = "☁ Nuvem Ativa";
+  }catch(e){
+    console.error("Erro ao salvar no Firebase:", e);
+    const statusEl = document.getElementById("cloudSyncStatus");
+    if(statusEl) statusEl.textContent = "⚠ Erro na Nuvem";
+  }
+}
+
+async function loadFromCloud(){
+  try{
+    const docRef = doc(db, "users", playerId);
+    const snap = await getDoc(docRef);
+    if(snap.exists()){
+      const cloudData = snap.data();
+      state = {
+        ...structuredClone(DEFAULT_STATE),
+        ...cloudData,
+        stock: { ...DEFAULT_STATE.stock, ...(cloudData.stock || {}) },
+        produced: { ...DEFAULT_STATE.produced, ...(cloudData.produced || {}) },
+        completed: Array.isArray(cloudData.completed) ? cloudData.completed : [],
+        upgrades: Array.isArray(cloudData.upgrades) ? cloudData.upgrades : []
+      };
+      localStorage.setItem("terrasRarasSaveProV3", JSON.stringify(state));
+      renderAll();
+      toast("Progresso sincronizado do Firebase com sucesso!");
+    }
+  }catch(e){
+    console.error("Erro ao carregar do Firebase:", e);
+  }
+}
+
 function save(){
   try{
-    localStorage.setItem("terrasRarasSave",JSON.stringify(state));
+    localStorage.setItem("terrasRarasSaveProV3", JSON.stringify(state));
+    saveToCloud(state);
   }catch(e){}
   renderAll();
 }
 
-const fmt = n => Number(n||0).toLocaleString("pt-BR");
+const fmt = n => Number(n || 0).toLocaleString("pt-BR");
 const $ = id => document.getElementById(id);
 
 function totalEfficiencyBonus(){
-  return state.upgrades.reduce((acc,id)=>acc+(UPGRADES.find(u=>u.id===id)?.eff||0),0);
+  return state.upgrades.reduce((acc, id) => acc + (UPGRADES.find(u => u.id === id)?.eff || 0), 0);
 }
 
 function effectiveCost(p){
   const bonus = totalEfficiencyBonus();
-  // Cada ponto de eficiência reduz 0,5% do custo operacional, limitado a 40% de desconto
   const discountRate = Math.min(0.40, bonus * 0.005);
   return Math.max(10, Math.round(p.cost * (1 - discountRate)));
 }
 
-// Assistente de voz: usa a síntese de fala já disponível no navegador, sem serviços pagos.
 let audioEnabled = true;
-let lastSpokenText = "Bem-vindo à Mineradora Aurora. Este é um simulador educativo de mineração e processamento de terras raras. Use o botão Ativar áudio para ouvir as instruções.";
+let lastSpokenText = "Bem-vindo ao Centro de Comando Terras Raras.";
 
 function setAudioStatus(msg){
   const status = $("audioStatus");
@@ -102,51 +179,35 @@ function setAudioStatus(msg){
 }
 
 function speak(text){
-  lastSpokenText = String(text||"");
+  lastSpokenText = String(text || "").replace(/<[^>]*>/g, "");
   if(!audioEnabled || !lastSpokenText || !("speechSynthesis" in window)) return;
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(lastSpokenText);
   utterance.lang = "pt-BR";
-  utterance.rate = 0.94;
+  utterance.rate = 0.95;
   utterance.pitch = 1;
-  utterance.volume = 1;
   const voices = window.speechSynthesis.getVoices();
-  const portuguese = voices.find(v=>/^pt-BR$/i.test(v.lang)) || voices.find(v=>/^pt/i.test(v.lang));
+  const portuguese = voices.find(v => /^pt-BR$/i.test(v.lang)) || voices.find(v => /^pt/i.test(v.lang));
   if(portuguese) utterance.voice = portuguese;
-  utterance.onstart = () => setAudioStatus("Lendo as instruções em voz alta…");
-  utterance.onend = () => setAudioStatus("Pronto para ler novas instruções.");
-  utterance.onerror = () => setAudioStatus("Clique em Ativar áudio para liberar a leitura no navegador.");
   window.speechSynthesis.speak(utterance);
 }
 
 function stopSpeech(){
   if("speechSynthesis" in window) window.speechSynthesis.cancel();
-  setAudioStatus(audioEnabled ? "Leitura interrompida." : "Áudio desligado.");
 }
 
 function speakCurrentMission(){
   const i = activeMissionIndex();
   if(i < 0){
-    speak("Parabéns! Você concluiu todas as dez missões da cadeia produtiva.");
+    speak("Parabéns! Todas as quinze missões foram concluídas com sucesso.");
     return;
   }
   const m = MISSIONS[i];
-  speak(`Missão ${i+1}: ${m.title}. ${m.desc} Aprenda: ${m.detail} Para concluir, tenha ${m.target} unidades de ${MATERIALS[m.goal].name} no estoque. Ao concluir, você recebe ${fmt(m.reward)} créditos. Para realizar a missão, vá ao centro de produção, execute as etapas necessárias e depois volte aqui para resgatar a missão.`);
-}
-
-function speakView(name){
-  const messages = {
-    dashboard:"Você está na visão geral da sua indústria. Aqui pode acompanhar seu dinheiro, o estoque, a produção acumulada e o andamento das missões. Use o menu para acessar missões, produção, mercado e equipamentos.",
-    missions:"Você está na central de missões. Cada missão representa uma etapa da cadeia produtiva. Ouça a instrução de cada cartão e conclua o objetivo para receber créditos e desbloquear a próxima etapa.",
-    production:"Você está no centro de produção. Escolha uma máquina disponível, confira os materiais necessários e o custo em créditos. Pressione ouvir instrução em cada processo antes de iniciar. O botão iniciar só funciona quando você tem os recursos necessários.",
-    market:"Você está no mercado de materiais. Confira o estoque e o preço por unidade. Digite a quantidade que deseja vender e pressione vender. A venda adiciona créditos ao caixa da empresa.",
-    upgrades:"Você está na loja de equipamentos. Ouça a descrição de cada melhoria, confira o preço e compre quando tiver créditos suficientes. Os equipamentos aumentam a eficiência e reduzem os custos operacionais da indústria."
-  };
-  speak(messages[name] || "Nova seção aberta.");
+  speak(`Missão ${i+1}: ${m.title}. ${m.desc}`);
 }
 
 function activeMissionIndex(){
-  for(let i=0; i<MISSIONS.length; i++){
+  for(let i = 0; i < MISSIONS.length; i++){
     if(!state.completed.includes(i)) return i;
   }
   return -1;
@@ -154,7 +215,7 @@ function activeMissionIndex(){
 
 function missionProgress(i){
   const m = MISSIONS[i];
-  return Math.min(100, Math.floor((state.stock[m.goal]||0) / m.target * 100));
+  return Math.min(100, Math.floor((state.stock[m.goal] || 0) / m.target * 100));
 }
 
 function unlockedProcess(p){
@@ -163,16 +224,17 @@ function unlockedProcess(p){
 
 function toast(msg){
   const el = $("toast");
+  if(!el) return;
   el.textContent = msg;
   el.classList.add("show");
   clearTimeout(toast.timer);
-  toast.timer = setTimeout(()=>el.classList.remove("show"), 2800);
+  toast.timer = setTimeout(() => el.classList.remove("show"), 2800);
   speak(msg);
 }
 
-function showModal(title, text, symbol="✓", eyebrow="OPERAÇÃO CONCLUÍDA"){
+function showModal(title, text, symbol = "✓", eyebrow = "NOTIFICAÇÃO"){
   $("modalTitle").textContent = title;
-  $("modalText").textContent = text;
+  $("modalText").innerHTML = text;
   $("modalSymbol").textContent = symbol;
   $("modalEyebrow").textContent = eyebrow;
   $("modalBackdrop").classList.add("show");
@@ -183,213 +245,211 @@ function closeModal(){
 }
 
 function changeView(name){
-  document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active", v.id === "view-" + name));
-  document.querySelectorAll(".nav-link").forEach(b=>b.classList.toggle("active", b.dataset.view === name));
+  document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + name));
+  document.querySelectorAll(".nav-link").forEach(b => b.classList.toggle("active", b.dataset.view === name));
   const labels = {
-    dashboard:"Visão geral",
-    missions:"Missões",
-    production:"Produção",
-    market:"Mercado",
-    upgrades:"Equipamentos"
+    dashboard: "Visão geral",
+    missions: "Missões",
+    production: "Produção",
+    market: "Mercado",
+    upgrades: "Equipamentos"
   };
-  $("pageTitle").textContent = labels[name] || "Visão geral";
-  $("sidebar").classList.remove("open");
-  window.scrollTo({top:0, behavior:"smooth"});
-  speakView(name);
+  const titleEl = $("pageTitle");
+  if(titleEl) titleEl.textContent = labels[name] || "Visão geral";
+  const sidebar = $("sidebar");
+  if(sidebar) sidebar.classList.remove("open");
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function renderStock(){
   const list = $("stockList");
-  list.innerHTML = Object.entries(MATERIALS).map(([id,m])=>`
+  if(!list) return;
+  list.innerHTML = Object.entries(MATERIALS).map(([id, m]) => `
     <div class="stock-row">
-      <span class="material-icon">${m.icon}</span>
-      <div><span class="stock-name">${m.name}</span><small class="stock-sub">Disponível no estoque</small></div>
-      <strong class="stock-qty">${fmt(state.stock[id])}</strong>
+      <span class="material-icon mat-icon-${m.color}">${m.icon}</span>
+      <div>${matBadge(id)}<small class="stock-sub">Disponível</small></div>
+      <strong class="stock-qty">${fmt(state.stock[id])} ${m.unit}</strong>
     </div>
   `).join("");
 }
 
 function renderChain(){
-  $("chainStrip").innerHTML = MISSIONS.map((m,i)=>`
+  const strip = $("chainStrip");
+  if(!strip) return;
+  strip.innerHTML = MISSIONS.map((m, i) => `
     <div class="chain-step ${state.completed.includes(i) ? "done" : i === activeMissionIndex() ? "" : "locked"}">
-      <span class="step-no">ETAPA ${String(i+1).padStart(2,"0")}</span>
+      <span class="step-no">ETAPA ${String(i + 1).padStart(2, "0")}</span>
       <strong>${m.title}</strong>
+      <div style="margin-top:6px">${matBadge(m.goal)}</div>
     </div>
   `).join("");
 }
 
 function renderDashboard(){
   const idx = activeMissionIndex();
-  $("statCoins").innerHTML = `${fmt(state.coins)} <small>CR</small>`;
-  $("topCoins").textContent = fmt(state.coins);
-  $("statOre").innerHTML = `${fmt(state.stock.ore)} <small>un.</small>`;
-  $("statProduction").innerHTML = `${fmt(state.production)} <small>un.</small>`;
-  $("statMissions").innerHTML = `${state.completed.length} <small>/ 10</small>`;
-  $("companyLevel").textContent = 1 + Math.floor(state.completed.length / 2);
-  $("missionCount").textContent = idx < 0 ? "✓" : idx + 1;
+  if($("statCoins")) $("statCoins").innerHTML = `${fmt(state.coins)} <small>CR</small>`;
+  if($("topCoins")) $("topCoins").textContent = fmt(state.coins);
+  if($("statOre")) $("statOre").innerHTML = `${fmt(state.stock.ore)} <small>un.</small>`;
+  if($("statProduction")) $("statProduction").innerHTML = `${fmt(state.production)} <small>un.</small>`;
+  if($("statMissions")) $("statMissions").innerHTML = `${state.completed.length} <small>/ 15</small>`;
+  if($("companyLevel")) $("companyLevel").textContent = 1 + Math.floor(state.completed.length / 2);
+  if($("missionCount")) $("missionCount").textContent = idx < 0 ? "★" : idx + 1;
   if($("heroIndex")){
-    $("heroIndex").innerHTML = `${idx < 0 ? "10" : String(idx + 1).padStart(2,"0")} <span>/ 10</span>`;
+    $("heroIndex").innerHTML = `${idx < 0 ? "15" : String(idx + 1).padStart(2, "0")} <span>/ 15</span>`;
   }
 
   if(idx < 0){
-    $("nextMissionTitle").textContent = "Cadeia produtiva concluída";
-    $("nextMissionDesc").textContent = "Parabéns! Você concluiu as dez etapas desta simulação industrial.";
+    if($("nextMissionEyebrow")) $("nextMissionEyebrow").textContent = "FROTA ESPACIAL CONCLUÍDA";
+    if($("nextMissionTitle")) $("nextMissionTitle").textContent = "O Legado de VovôBrDias está consagrado!";
+    if($("nextMissionDesc")) $("nextMissionDesc").innerHTML = `Parabéns Diretor! Todas as 15 missões espaciais e industriais foram concluídas com sucesso.`;
     if($("nextMissionBadge")) $("nextMissionBadge").textContent = "CONCLUÍDA";
-    $("missionProgressText").textContent = "100%";
-    $("missionProgressBar").style.width = "100%";
+    if($("missionProgressText")) $("missionProgressText").textContent = "100%";
+    if($("missionProgressBar")) $("missionProgressBar").style.width = "100%";
+    if($("nextMissionActionBtn")) $("nextMissionActionBtn").style.display = "none";
   }else{
-    $("nextMissionTitle").textContent = `Missão ${String(idx+1).padStart(2,"0")} · ${MISSIONS[idx].title}`;
-    $("nextMissionDesc").textContent = MISSIONS[idx].desc;
+    if($("nextMissionEyebrow")) $("nextMissionEyebrow").textContent = "PRÓXIMO OBJETIVO";
+    if($("nextMissionTitle")) $("nextMissionTitle").textContent = `Missão ${String(idx + 1).padStart(2, "0")} · ${MISSIONS[idx].title}`;
+    if($("nextMissionDesc")) $("nextMissionDesc").innerHTML = `${MISSIONS[idx].desc} Meta: <strong>${MISSIONS[idx].target} un.</strong> de ${matBadge(MISSIONS[idx].goal)}.`;
     if($("nextMissionBadge")) $("nextMissionBadge").textContent = "EM ANDAMENTO";
-    $("missionProgressText").textContent = missionProgress(idx) + "%";
-    $("missionProgressBar").style.width = missionProgress(idx) + "%";
+    if($("missionProgressText")) $("missionProgressText").textContent = missionProgress(idx) + "%";
+    if($("missionProgressBar")) $("missionProgressBar").style.width = missionProgress(idx) + "%";
+    if($("nextMissionActionBtn")) $("nextMissionActionBtn").style.display = "inline-flex";
+  }
+
+  const dashOffer = $("finalChipOfferDashboard");
+  if(dashOffer){
+    dashOffer.innerHTML = (state.completed.length >= MISSIONS.length) ? `
+      <div class="final-chip-card">
+        <div class="final-chip-head"><span class="final-chip-icon">🚀</span><div><span class="eyebrow" style="color:var(--accent)">O LEGADO SUPREMO</span><h4>Homenagem ao Diretor VovôBrDias!</h4></div></div>
+        <p>Você completou a expansão espacial e eternizou a marca VovôBrDias nas estrelas!</p>
+      </div>
+    ` : "";
   }
   renderStock();
   renderChain();
 }
 
-function speakMission(i){
-  const m = MISSIONS[i];
-  const status = state.completed.includes(i)
-    ? "Esta missão já foi concluída."
-    : i === activeMissionIndex()
-    ? "Esta é a missão atual."
-    : "Esta missão está bloqueada. Conclua as etapas anteriores primeiro.";
-
-  if(i === 1){
-    const costPerRun = effectiveCost(PROCESSES[0]);
-    speak(`Missão 2: Britagem e moagem. Você precisa produzir 20 unidades de concentrado mineral. Atenção: o concentrado não é comprado. Você vai fabricar esse material. Entre no menu Produção e encontre a máquina chamada Britagem e moagem. Confira se possui minério bruto e créditos. Cada vez que clicar em Iniciar processamento, a máquina vai consumir 10 unidades de minério bruto e ${fmt(costPerRun)} créditos. Em troca, você receberá 5 unidades de concentrado mineral. Faça essa operação quatro vezes. No total, serão usadas 40 unidades de minério bruto e ${fmt(costPerRun * 4)} créditos para produzir as 20 unidades necessárias. Depois, volte para Missões e clique em Resgatar missão. ${status}`);
-    return;
-  }
-  speak(`Missão ${i+1}: ${m.title}. ${m.desc} ${m.detail} Objetivo: acumular ${m.target} unidades de ${MATERIALS[m.goal].name}. Recompensa: ${fmt(m.reward)} créditos. ${status}`);
-}
-
-function speakConcentrateGuide(){
-  const ore = state.stock.ore || 0;
-  const concentrate = state.stock.concentrate || 0;
-  const remaining = Math.max(0, 20 - concentrate);
-  const runs = Math.ceil(remaining / 5);
-  const costPerRun = effectiveCost(PROCESSES[0]);
-  const oreNeeded = runs * 10;
-  const moneyNeeded = runs * costPerRun;
-  const readiness = ore >= oreNeeded && state.coins >= moneyNeeded
-    ? "Pelos recursos atuais, você já tem minério e créditos suficientes para produzir o que falta."
-    : `Atenção aos recursos: você tem ${ore} unidades de minério bruto e ${fmt(state.coins)} créditos. Para produzir o que falta, serão necessários aproximadamente ${oreNeeded} unidades de minério e ${fmt(moneyNeeded)} créditos.`;
-
-  speak(`Vamos aprender a produzir concentrado mineral, passo a passo. Primeiro: o minério bruto são as rochas que chegam da mina. O concentrado mineral é o material obtido depois de preparar e separar parte dos minerais de interesse. Segundo: no menu Produção, procure a máquina Britagem e moagem. Terceiro: cada operação exige 10 unidades de minério bruto e ${fmt(costPerRun)} créditos. Clique no botão Iniciar processamento. A máquina vai transformar esse minério em 5 unidades de concentrado mineral. Quarto: a missão pede 20 unidades. Portanto, são quatro operações no total, consumindo 40 unidades de minério bruto. Quinto: acompanhe o estoque. Quando aparecerem 20 unidades de concentrado mineral, volte à área Missões e clique em Resgatar missão. No momento, você já tem ${concentrate} unidades de concentrado. Faltam ${remaining} unidades. ${readiness}`);
-}
-
 function renderMissions(){
-  const pct = Math.round(state.completed.length / 10 * 100);
-  $("missionSummaryCount").textContent = `${state.completed.length}/10`;
-  $("allMissionProgress").style.width = pct + "%";
-  $("allMissionPercent").textContent = pct + "% da cadeia produtiva";
-  $("missionList").innerHTML = MISSIONS.map((m,i)=>{
+  const pct = Math.round(state.completed.length / 15 * 100);
+  if($("missionSummaryCount")) $("missionSummaryCount").textContent = `${state.completed.length}/15`;
+  if($("allMissionProgress")) $("allMissionProgress").style.width = pct + "%";
+  if($("allMissionPercent")) $("allMissionPercent").textContent = `${pct}% da cadeia produtiva e espacial`;
+
+  const mOffer = $("finalChipOfferMissions");
+  if(mOffer){
+    mOffer.innerHTML = (state.completed.length >= MISSIONS.length) ? `
+      <div class="final-chip-card" style="margin-bottom:20px;">
+        <div class="final-chip-head"><span class="final-chip-icon">🚀</span><div><span class="eyebrow" style="color:var(--accent)">O LEGADO SUPREMO</span><h4>Homenagem ao Diretor VovôBrDias!</h4></div></div>
+        <p>Você completou todas as missões espaciais e industriais!</p>
+      </div>
+    ` : "";
+  }
+
+  const mList = $("missionList");
+  if(!mList) return;
+  mList.innerHTML = MISSIONS.map((m, i) => {
     const done = state.completed.includes(i);
     const unlocked = i === activeMissionIndex() || done;
     const progress = done ? 100 : unlocked ? missionProgress(i) : 0;
     const readyToClaim = unlocked && !done && (state.stock[m.goal] || 0) >= m.target;
     return `
       <article class="mission-card ${done ? "completed" : unlocked ? "unlocked" : "locked"}">
-        <div class="mission-number">${done ? "✓" : String(i+1).padStart(2,"0")}</div>
+        <div class="mission-number">${done ? "✓" : String(i + 1).padStart(2, "0")}</div>
         <div class="mission-info">
           <h3>${m.title}</h3>
           <p>${m.desc}</p>
-          <div class="mission-reward">Meta: ${m.target} ${MATERIALS[m.goal].name} · Recompensa: ◈ ${fmt(m.reward)} créditos · ${m.stage}</div>
-          <div class="progress-track" style="margin-top:9px;max-width:260px"><span style="width:${progress}%"></span></div>
+          <div class="mission-reward">Meta: <strong>${m.target} un.</strong> de ${matBadge(m.goal)} · Recompensa: ◈ ${fmt(m.reward)} CR · ${m.stage}</div>
+          <div class="progress-track" style="margin-top:10px;max-width:280px"><span style="width:${progress}%"></span></div>
         </div>
         <div class="mission-action">
-          <small>${done ? "CONCLUÍDA" : readyToClaim ? "PRONTA PARA RESGATE" : unlocked ? progress + "% concluído" : "BLOQUEADA"}</small>
-          ${unlocked && !done ? `<button class="btn btn-primary" type="button" onclick="completeMission(${i})">Resgatar missão</button>` : ""}
-          <button class="audio-btn card-audio mission-audio-btn" type="button" onclick="speakMission(${i})">🔊 Ouvir instrução</button>
+          <small>${done ? "CONCLUÍDA" : readyToClaim ? "PRONTA PARA RESGATE" : unlocked ? `${progress}% concluído` : "BLOQUEADA"}</small>
+          ${unlocked && !done ? `<button class="btn btn-primary mission-claim-btn" data-mission="${i}" type="button">Resgatar</button>` : ""}
         </div>
       </article>
     `;
   }).join("");
-}
 
-function speakProcess(id){
-  const p = PROCESSES.find(x=>x.id===id);
-  if(!p) return;
-  if(id === "crush"){
-    speakConcentrateGuide();
-    return;
-  }
-  const cost = effectiveCost(p);
-  speak(`${p.title}. ${p.desc} Instrução: você vai consumir ${p.qty} unidades de ${MATERIALS[p.input].name}, pagar ${fmt(cost)} créditos e receber ${p.out} unidades de ${MATERIALS[p.output].name}. ${p.learn} Antes de iniciar, confirme se possui os materiais e créditos necessários. Pressione iniciar processamento para executar esta etapa.`);
+  document.querySelectorAll(".mission-claim-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      completeMission(Number(btn.dataset.mission));
+    });
+  });
 }
 
 function renderProcesses(){
   const grid = $("processGrid");
-  grid.innerHTML = PROCESSES.map(p=>{
+  if(!grid) return;
+  grid.innerHTML = PROCESSES.map(p => {
     const open = unlockedProcess(p);
     const cost = effectiveCost(p);
-    const hasDiscount = cost < p.cost;
-    const enough = (state.stock[p.input] || 0) >= p.qty && state.coins >= cost;
+    const hasMainInput = (state.stock[p.input] || 0) >= p.qty;
+    const hasExtraInput = !p.extraInput || (state.stock[p.extraInput] || 0) >= p.extraQty;
+    const enough = hasMainInput && hasExtraInput && state.coins >= cost;
+    const lockLabel = p.isFinalProject ? "Conclua missões anteriores" : "Missão anterior necessária";
     return `
-      <article class="process-card">
+      <article class="process-card ${p.isFinalProject ? "final-process-card" : ""}" id="process-card-${p.id}">
         <div class="process-top">
           <span class="process-icon">${p.icon}</span>
-          <span class="status-pill">${open ? "DISPONÍVEL" : "BLOQUEADO"}</span>
+          <span class="status-pill">${open ? (p.isFinalProject ? "SUPREMO" : "DISPONÍVEL") : "BLOQUEADO"}</span>
         </div>
         <h3>${p.title}</h3>
         <p>${p.desc}</p>
         <div class="recipe">
-          <strong>Entrada:</strong> ${p.qty} ${MATERIALS[p.input].name}<br>
-          <strong>Saída:</strong> ${p.out} ${MATERIALS[p.output].name}<br>
-          <strong>Produzido até agora:</strong> <span class="produced-count">${fmt(state.produced[p.output]||0)} ${MATERIALS[p.output].unit}</span><br>
-          <strong>Custo:</strong> ${fmt(cost)} créditos ${hasDiscount ? `<small style="color:#5d8c32">(base: ${fmt(p.cost)})</small>` : ""}
+          <strong>Entrada:</strong> ${p.qty} ${matBadge(p.input)}${p.extraInput ? ` + ${p.extraQty} ${matBadge(p.extraInput)}` : ""}<br>
+          <strong>Saída:</strong> ${p.out} ${matBadge(p.output)}<br>
+          <strong>Produzido:</strong> <span class="produced-count">${fmt(state.produced[p.output] || 0)} ${MATERIALS[p.output].unit}</span><br>
+          <strong>Custo:</strong> ${fmt(cost)} CR
         </div>
-        <button class="audio-btn card-audio" type="button" onclick="speakProcess('${p.id}')">${p.id === "crush" ? "🔊 Como produzir concentrado" : "🔊 Ouvir instrução"}</button>
-        <button class="btn ${open && enough ? "btn-primary" : "btn-outline"}" type="button" ${open && enough ? `onclick="runProcess('${p.id}')"` : "disabled"}>
-          ${!open ? "Missão anterior necessária" : !enough ? "Insumos ou créditos insuficientes" : "▶ Iniciar processamento"}
+        <button class="btn ${open && enough ? "btn-light" : "btn-outline"} process-run-btn" data-process="${p.id}" type="button" ${open && enough ? "" : "disabled"}>
+          ${!open ? lockLabel : !enough ? "Insumos ou CR insuficientes" : (p.isFinalProject ? "🚀 Construir Módulo VovôBrDias" : "▶ Executar processo")}
         </button>
       </article>
     `;
   }).join("");
 
-  const eff = 100 + totalEfficiencyBonus();
-  $("productionTotal").textContent = fmt(state.production) + " un.";
-  $("equipmentTotal").textContent = 1 + state.upgrades.length;
-  $("efficiencyValue").textContent = eff + "%";
-  if($("efficiencyBar")){
-    $("efficiencyBar").style.width = Math.min(100, Math.round((eff / 180) * 100)) + "%";
-  }
-}
+  document.querySelectorAll(".process-run-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      runProcess(btn.dataset.process);
+    });
+  });
 
-function speakMarket(id){
-  const m = MATERIALS[id];
-  speak(`Mercado: ${m.name}. Você possui ${fmt(state.stock[id])} unidades. O preço de venda simulado é ${fmt(m.price)} créditos por unidade. Digite a quantidade desejada no campo e pressione vender. Não é possível vender mais unidades do que existem no estoque.`);
+  const eff = 100 + totalEfficiencyBonus();
+  if($("productionTotal")) $("productionTotal").textContent = `${fmt(state.production)} un.`;
+  if($("equipmentTotal")) $("equipmentTotal").textContent = 1 + state.upgrades.length;
+  if($("efficiencyValue")) $("efficiencyValue").textContent = `${eff}%`;
 }
 
 function renderMarket(){
-  $("marketGrid").innerHTML = Object.entries(MATERIALS).map(([id,m])=>{
+  const marketGrid = $("marketGrid");
+  if(!marketGrid) return;
+  marketGrid.innerHTML = Object.entries(MATERIALS).map(([id, m]) => {
     const qtyAvailable = state.stock[id] || 0;
     const disabled = qtyAvailable <= 0;
     return `
-      <article class="market-card">
-        <span class="material-icon">${m.icon}</span>
-        <h3>${m.name}</h3>
-        <p>Estoque disponível: <strong>${fmt(qtyAvailable)} ${m.unit}</strong></p>
-        <div class="market-price">${fmt(m.price)} <small>CR / unidade</small></div>
-        <button class="audio-btn card-audio" type="button" onclick="speakMarket('${id}')">🔊 Ouvir como vender</button>
+      <article class="market-card ${id === "vovo_artifact" ? "chip-market-card" : ""}">
+        <span class="material-icon mat-icon-${m.color}">${m.icon}</span>
+        <div style="margin-top:10px">${matBadge(id)}</div>
+        <p style="margin-top:8px">Estoque: <strong>${fmt(qtyAvailable)} ${m.unit}</strong></p>
+        <div class="market-price">${fmt(m.price)} <small>CR / un.</small></div>
         <div class="sell-row">
-          <input type="number" min="1" max="${Math.max(1, qtyAvailable)}" value="${qtyAvailable > 0 ? Math.min(5, qtyAvailable) : 0}" id="sell-${id}" aria-label="Quantidade de ${m.name}" ${disabled ? "disabled" : ""}>
-          <button class="btn btn-primary" type="button" onclick="sellMaterial('${id}')" ${disabled ? "disabled" : ""}>Vender</button>
+          <input type="number" min="1" max="${Math.max(1, qtyAvailable)}" value="${qtyAvailable > 0 ? Math.min(5, qtyAvailable) : 0}" id="sell-${id}" ${disabled ? "disabled" : ""}>
+          <button class="btn btn-light market-sell-btn" data-mat="${id}" type="button" ${disabled ? "disabled" : ""}>Vender</button>
         </div>
       </article>
     `;
   }).join("");
-}
 
-function speakUpgrade(id){
-  const u = UPGRADES.find(x=>x.id===id);
-  if(!u) return;
-  speak(`${u.name}. ${u.desc} O investimento custa ${fmt(u.cost)} créditos e acrescenta ${u.eff} por cento de eficiência à simulação, reduzindo os custos operacionais. ${state.upgrades.includes(id) ? "Este equipamento já foi adquirido." : state.coins >= u.cost ? "Você tem créditos suficientes para comprar." : "Você ainda não tem créditos suficientes."}`);
+  document.querySelectorAll(".market-sell-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      sellMaterial(btn.dataset.mat);
+    });
+  });
 }
 
 function renderUpgrades(){
-  $("upgradeGrid").innerHTML = UPGRADES.map(u=>{
+  const upgradeGrid = $("upgradeGrid");
+  if(!upgradeGrid) return;
+  upgradeGrid.innerHTML = UPGRADES.map(u => {
     const owned = state.upgrades.includes(u.id);
     const canAfford = state.coins >= u.cost;
     return `
@@ -398,18 +458,48 @@ function renderUpgrades(){
         ${owned ? '<span class="owned">ADQUIRIDO</span>' : ""}
         <h3>${u.name}</h3>
         <p>${u.desc}</p>
-        <button class="audio-btn card-audio" type="button" onclick="speakUpgrade('${u.id}')">🔊 Ouvir equipamento</button>
         <div class="upgrade-cost">${fmt(u.cost)} <small>CRÉDITOS</small></div>
-        <div class="stat-foot">Eficiência adicional: +${u.eff}%</div>
-        <button class="btn ${owned ? "btn-outline" : "btn-primary"} full" type="button" style="margin-top:14px" ${owned || !canAfford ? "disabled" : `onclick="buyUpgrade('${u.id}')"`}>
-          ${owned ? "Equipamento adquirido" : !canAfford ? "Créditos insuficientes" : "Adquirir equipamento"}
+        <div class="stat-foot">Eficiência: +${u.eff}%</div>
+        <button class="btn ${owned ? "btn-outline" : "btn-light"} full upgrade-buy-btn" data-upgrade="${u.id}" type="button" style="margin-top:16px" ${owned || !canAfford ? "disabled" : ""}>
+          ${owned ? "Adquirido" : !canAfford ? "Créditos insuficientes" : "Investir"}
         </button>
       </article>
     `;
   }).join("");
+
+  document.querySelectorAll(".upgrade-buy-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      buyUpgrade(btn.dataset.upgrade);
+    });
+  });
+}
+
+const STAGE_THEMES = [
+  { name: "FASE 1 · LAVRA", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><rect width="640" height="280" fill="#0b1724"/><polygon points="180,280 310,115 445,280" fill="#132538"/></svg>` },
+  { name: "FASE 2 · COMINUIÇÃO", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><rect width="640" height="280" fill="#0b1724"/><rect x="255" y="135" width="74" height="115" rx="8" fill="#172d4c"/></svg>` },
+  { name: "FASE 3 · HIDROMETALURGIA", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><rect width="640" height="280" fill="#0b1724"/><rect x="250" y="95" width="46" height="150" rx="22" fill="#1e3a5f"/></svg>` },
+  { name: "FASE 4 · METALURGIA", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><rect width="640" height="280" fill="#0b1724"/><path d="M310 245 L330 110 H430 L450 245 Z" fill="#254b7d"/></svg>` },
+  { name: "FASE 5 · ALTA TECNOLOGIA", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><rect width="640" height="280" fill="#0b1724"/><circle cx="430" cy="145" r="44" fill="#06b6d4" opacity="0.3"/></svg>` },
+  { name: "FASE 6 · ESPAÇO VOVÔBRDIAS", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><rect width="640" height="280" fill="#070d18"/><circle cx="500" cy="80" r="3" fill="#fff"/><circle cx="120" cy="60" r="2" fill="#fff"/><rect x="380" y="80" width="140" height="120" rx="16" fill="#0f1c2e" stroke="#22c55e" stroke-width="3"/><text x="450" y="145" text-anchor="middle" fill="#22c55e" font-family="Manrope,sans-serif" font-weight="800" font-size="13">VOVÔBRDIAS</text></svg>` }
+];
+
+function currentStageTheme(){
+  const completed = state.completed.length;
+  if(completed >= 10) return STAGE_THEMES[5];
+  const idx = Math.min(4, Math.floor(completed / 2));
+  return STAGE_THEMES[idx];
+}
+
+function renderStageTheme(){
+  const theme = currentStageTheme();
+  const heroScene = $("heroScene");
+  if(heroScene){
+    heroScene.innerHTML = `${theme.svg}<span class="hero-stage-tag">${theme.name}</span>`;
+  }
 }
 
 function renderAll(){
+  renderStageTheme();
   renderDashboard();
   renderMissions();
   renderProcesses();
@@ -418,22 +508,25 @@ function renderAll(){
 }
 
 function runProcess(id){
-  const p = PROCESSES.find(x=>x.id===id);
+  const p = PROCESSES.find(x => x.id === id);
   if(!p || !unlockedProcess(p)) return;
   const cost = effectiveCost(p);
-  if(state.stock[p.input] < p.qty || state.coins < cost){
-    toast("Recursos insuficientes para esta operação.");
+  const hasMain = (state.stock[p.input] || 0) >= p.qty;
+  const hasExtra = !p.extraInput || (state.stock[p.extraInput] || 0) >= p.extraQty;
+  if(!hasMain || !hasExtra || state.coins < cost){
+    toast("Recursos ou créditos insuficientes para esta operação.");
     return;
   }
   state.stock[p.input] -= p.qty;
+  if(p.extraInput) state.stock[p.extraInput] -= p.extraQty;
   state.stock[p.output] += p.out;
   state.produced[p.output] = (state.produced[p.output] || 0) + p.out;
   state.coins -= cost;
   state.production += p.out;
   save();
-  const result = `Processamento concluído. ${p.title}: você consumiu ${p.qty} unidades de ${MATERIALS[p.input].name} e produziu ${p.out} unidades de ${MATERIALS[p.output].name}. ${p.learn}`;
-  showModal("Processamento concluído", result, "⚙", "PRODUÇÃO REALIZADA");
-  speak(result);
+
+  const htmlResult = `<strong>${p.title}:</strong> você produziu <strong>${p.out} un.</strong> de ${matBadge(p.output)}.<br><br>${p.learn}`;
+  showModal(p.isFinalProject ? "Módulo VovôBrDias construído!" : "Processamento concluído", htmlResult, p.isFinalProject ? "🚀" : "⚙", p.isFinalProject ? "HOMENAGEM SUPREMA" : "PRODUÇÃO");
 }
 
 function completeMission(i){
@@ -446,13 +539,16 @@ function completeMission(i){
   state.completed.push(i);
   state.coins += m.reward;
   save();
-  const result = `Parabéns! Você concluiu a missão ${m.title} e recebeu ${fmt(m.reward)} créditos. A próxima etapa da cadeia produtiva foi liberada.`;
-  showModal("Missão concluída!", result, "✦", "RECOMPENSA RECEBIDA");
-  speak(result);
+  const isAllDone = state.completed.length >= MISSIONS.length;
+  const htmlResult = isAllDone
+    ? `Parabéns Diretor! Você concluiu a missão final <strong>${m.title}</strong> e eternizou o legado de <strong>VovôBrDias</strong>!`
+    : `Parabéns! Você concluiu a missão <strong>${m.title}</strong> e recebeu <strong>${fmt(m.reward)} créditos</strong>.`;
+  showModal(isAllDone ? "Expansão concluída · Homenagem Suprema!" : "Missão concluída!", htmlResult, isAllDone ? "🚀" : "✦", "RECOMPENSA");
 }
 
 function sellMaterial(id){
   const input = $("sell-" + id);
+  if(!input) return;
   const qty = Math.floor(Number(input.value));
   if(!Number.isFinite(qty) || qty <= 0){
     toast("Informe uma quantidade válida.");
@@ -466,71 +562,89 @@ function sellMaterial(id){
   state.stock[id] -= qty;
   state.coins += revenue;
   save();
-  toast(`${qty} unidade(s) vendida(s) por ${fmt(revenue)} créditos.`);
-  speak(`Venda realizada. Você vendeu ${qty} unidades de ${MATERIALS[id].name} e recebeu ${fmt(revenue)} créditos. Seu saldo agora é ${fmt(state.coins)} créditos.`);
+  toast(`${qty} unidade(s) vendida(s) com sucesso.`);
 }
 
 function buyUpgrade(id){
-  const u = UPGRADES.find(x=>x.id===id);
+  const u = UPGRADES.find(x => x.id === id);
   if(!u || state.upgrades.includes(id)) return;
   if(state.coins < u.cost){
-    toast("Créditos insuficientes.");
+    toast("Créditos insuficientes para investimento.");
     return;
   }
   state.coins -= u.cost;
   state.upgrades.push(id);
   save();
-  const result = `Compra realizada. ${u.name} foi incorporado à sua indústria. Eficiência adicional de ${u.eff} por cento registrada no painel.`;
-  showModal("Investimento realizado", result, "⬡", "EXPANSÃO INDUSTRIAL");
-  speak(result);
+  showModal("Investimento realizado", `<strong>${u.name}</strong> adquirido com sucesso!`, "⬡", "PESQUISA");
 }
 
 function startNewGame(){
-  if(!confirm("Começar uma nova partida?\n\nTodo o progresso atual desta indústria — dinheiro, estoque, produção acumulada, missões e equipamentos — será apagado neste navegador. Você começará novamente com os recursos iniciais. Esta ação não pode ser desfeita.")) return;
-  stopSpeech();
+  if(!confirm("Deseja iniciar uma nova partida?\n\nTodo o progresso atual desta empresa será reiniciado.")) return;
   closeModal();
   state = structuredClone(DEFAULT_STATE);
   save();
   changeView("dashboard");
-  toast("Nova partida iniciada! Sua indústria está pronta para começar do zero.");
+  toast("Nova partida iniciada com sucesso!");
 }
 
-document.querySelectorAll(".nav-link").forEach(b=>b.addEventListener("click",()=>changeView(b.dataset.view)));
-document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>changeView(b.dataset.goto)));
-if($("brandHome")) $("brandHome").addEventListener("click",e=>{e.preventDefault();changeView("dashboard");});
-$("mobileMenu").addEventListener("click",()=>$("sidebar").classList.toggle("open"));
-["newGame","newGameButton","resetGame"].forEach(id=>{
+// Event Bindings
+document.querySelectorAll(".nav-link").forEach(b => {
+  b.addEventListener("click", () => changeView(b.dataset.view));
+});
+
+document.querySelectorAll("[data-goto]").forEach(b => {
+  b.addEventListener("click", () => changeView(b.dataset.goto));
+});
+
+const brandHome = $("brandHome");
+if(brandHome) brandHome.addEventListener("click", e => { e.preventDefault(); changeView("dashboard"); });
+
+const mobileMenu = $("mobileMenu");
+if(mobileMenu) mobileMenu.addEventListener("click", () => $("sidebar").classList.toggle("open"));
+
+["newGame", "newGameButton", "resetGame"].forEach(id => {
   const btn = $(id);
   if(btn) btn.addEventListener("click", startNewGame);
 });
-$("modalClose").addEventListener("click",closeModal);
-$("modalOk").addEventListener("click",closeModal);
-$("modalBackdrop").addEventListener("click",e=>{if(e.target===$("modalBackdrop"))closeModal();});
-$("todayLabel").textContent = new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"short",year:"numeric"}).format(new Date());
 
-renderAll();
-
-if("speechSynthesis" in window){
-  window.speechSynthesis.onvoiceschanged = ()=>{};
-}else{
-  setAudioStatus("Este navegador não oferece leitura em voz alta. Experimente Chrome ou Edge.");
-  $("audioEnable").disabled = true;
-  $("audioToggle").disabled = true;
+const syncCloudBtn = $("syncCloudBtn");
+if(syncCloudBtn){
+  syncCloudBtn.addEventListener("click", () => {
+    loadFromCloud();
+    toast("Sincronizando dados com o Firebase...");
+  });
 }
 
-$("audioEnable").addEventListener("click",()=>{
-  audioEnabled = true;
-  $("audioToggle").textContent = "Áudio ligado";
-  $("audioToggle").setAttribute("aria-pressed","true");
-  speak("Áudio ativado. Bem-vindo à Mineradora Aurora. A partir de agora, você pode ouvir instruções das missões, processos, vendas e equipamentos. Em cada cartão, pressione o botão ouvir instrução.");
+const modalClose = $("modalClose");
+if(modalClose) modalClose.addEventListener("click", closeModal);
+const modalOk = $("modalOk");
+if(modalOk) modalOk.addEventListener("click", closeModal);
+const modalBackdrop = $("modalBackdrop");
+if(modalBackdrop) modalBackdrop.addEventListener("click", e => { if(e.target === modalBackdrop) closeModal(); });
+
+const speakMissionBtn = $("speakMissionBtn");
+if(speakMissionBtn) speakMissionBtn.addEventListener("click", speakCurrentMission);
+
+const todayLabel = $("todayLabel");
+if(todayLabel) todayLabel.textContent = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", year: "numeric" }).format(new Date());
+
+// Audio Assistant Toggles
+const audioEnable = $("audioEnable");
+if(audioEnable) audioEnable.addEventListener("click", () => { audioEnabled = true; speak("Áudio ativado."); toast("Áudio ativado."); });
+
+const audioRepeat = $("audioRepeat");
+if(audioRepeat) audioRepeat.addEventListener("click", () => speak(lastSpokenText));
+
+const audioToggle = $("audioToggle");
+if(audioToggle) audioToggle.addEventListener("click", () => {
+  audioEnabled = !audioEnabled;
+  audioToggle.textContent = audioEnabled ? "Áudio ligado" : "Áudio desligado";
+  audioToggle.setAttribute("aria-pressed", String(audioEnabled));
+  if(!audioEnabled) stopSpeech();
+  else speak("Áudio ligado.");
 });
 
-$("audioRepeat").addEventListener("click",()=>speak(lastSpokenText));
-
-$("audioToggle").addEventListener("click",()=>{
-  audioEnabled = !audioEnabled;
-  $("audioToggle").textContent = audioEnabled ? "Áudio ligado" : "Áudio desligado";
-  $("audioToggle").setAttribute("aria-pressed", String(audioEnabled));
-  if(!audioEnabled) stopSpeech();
-  else speak("Áudio ligado. Pressione ouvir instrução para receber ajuda falada.");
+// Initial load
+loadFromCloud().then(() => {
+  renderAll();
 });
