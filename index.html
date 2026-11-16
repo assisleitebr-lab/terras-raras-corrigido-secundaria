@@ -2,10 +2,12 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta name="theme-color" content="#070d18">
-  <meta name="description" content="Simulador educativo de terras raras com Fase 2 de Chips, Firebase e Expansão O Legado de VovôBrDias.">
-  <title>Terras Raras | Mining Industry (Pro v3.2 - Fase 2)</title>
+  <meta name="description" content="Simulador educativo de terras raras com Fase 2 de Chips, Firebase e suporte a PWA mobile e desktop.">
+  <title>Terras Raras | Mining Industry (PWA v3.3)</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -13,6 +15,7 @@
 </head>
 <body>
   <div class="app-shell">
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
     <aside class="sidebar" id="sidebar">
       <a class="brand" href="#inicio" id="brandHome" aria-label="Terras Raras início">
         <span class="brand-mark">TR</span>
@@ -33,12 +36,12 @@
         <div class="help-box">
           <span class="help-icon">i</span>
           <div>
-            <strong>Fase 2 · Chips & Império</strong>
-            <p>Novas missões de nanofabricação e tecnologia quântica ativadas!</p>
+            <strong>Modo PWA Android</strong>
+            <p>Instale na tela inicial para jogar em tela cheia como app nativo!</p>
           </div>
         </div>
         <button class="reset-link" id="resetGame" type="button">↻ Começar nova partida</button>
-        <small class="version">PROFISSIONAL v3.2 · FASE 2</small>
+        <small class="version">PROFISSIONAL v3.3 · PWA MOBILE</small>
       </div>
     </aside>
 
@@ -98,7 +101,7 @@
 
         <div class="section-heading">
           <div><span class="eyebrow">INDICADORES DE PERFORMANCE</span><h2>Painel operacional</h2></div>
-          <span class="updated-label"><span class="live-dot" style="background:#22c55e"></span> Sincronizado Firebase · Fase 2 Ativa</span>
+          <span class="updated-label"><span class="live-dot" style="background:#22c55e"></span> Sincronizado Firebase · Responsivo</span>
         </div>
 
         <div class="stat-grid">
@@ -236,7 +239,7 @@
       </section>
 
       <footer class="footer">
-        <span>© 2026 TERRAS RARAS · MINING INDUSTRY (Fase 2 Chips & VovôBrDias)</span>
+        <span>© 2026 TERRAS RARAS · MINING INDUSTRY (Fase 2 Chips & PWA Mobile)</span>
         <span>Simulação industrial e espacial avançada.</span>
       </footer>
     </main>
@@ -255,6 +258,13 @@
     </div>
   </div>
 
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed: ', err));
+      });
+    }
+  </script>
   <script type="module" src="app.js"></script>
 </body>
 </html>
