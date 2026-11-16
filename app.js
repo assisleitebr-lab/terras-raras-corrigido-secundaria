@@ -1,38 +1,19 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDXKVUV6DnlkWuozFp57rl6M1K-0iXHIjk",
-  authDomain: "terras-rara-v1-pro.firebaseapp.com",
-  projectId: "terras-rara-v1-pro",
-  storageBucket: "terras-rara-v1-pro.firebasestorage.app",
-  messagingSenderId: "737526391829",
-  appId: "1:737526391829:web:493ee03146bbf97eaf5a1c",
-  measurementId: "G-W2SZ7RWD4G"
-};
-
-const firebaseApp = initializeApp(firebaseConfig);
-const db = getFirestore(firebaseApp);
-
-let playerId = localStorage.getItem("terrasRarasPlayerId");
-if(!playerId){
-  playerId = "player_" + Math.random().toString(36).substring(2, 15);
-  localStorage.setItem("terrasRarasPlayerId", playerId);
-}
+// Terras Raras: Mining Tycoon v4.0
+// Sem erros de console, com Web Audio SFX, Figurinhas Animadas e Estoque Inicial de 1200
 
 const MATERIALS = {
-  ore: { name: "Minério bruto", icon: "◆", price: 1200, unit: "un.", color: "ore" },
-  concentrate: { name: "Concentrado mineral", icon: "◈", price: 42, unit: "un.", color: "concentrate" },
-  mixed: { name: "Composto misto de terras raras", icon: "◇", price: 75, unit: "un.", color: "mixed" },
-  oxide: { name: "Óxido de terras raras", icon: "⬡", price: 125, unit: "un.", color: "oxide" },
-  metal: { name: "Metal de neodímio", icon: "▰", price: 210, unit: "un.", color: "metal" },
-  alloy: { name: "Liga NdFeB", icon: "▣", price: 330, unit: "un.", color: "alloy" },
-  magnet: { name: "Ímã permanente NdFeB", icon: "✥", price: 520, unit: "un.", color: "magnet" },
-  motor: { name: "Componente para motor elétrico", icon: "⚙", price: 850, unit: "un.", color: "motor" },
-  chip: { name: "Chip eletrônico de alta precisão", icon: "❖", price: 1650, unit: "un.", color: "chip" },
-  battery: { name: "Bateria de estado sólido", icon: "⚡", price: 2800, unit: "un.", color: "battery" },
-  quantum_core: { name: "Núcleo de propulsão magnética", icon: "⚛", price: 4500, unit: "un.", color: "quantum" },
-  vovo_artifact: { name: "Módulo Espacial VovôBrDias", icon: "🚀", price: 10000, unit: "un.", color: "artifact" }
+  ore: { name: "Minério bruto", icon: "🪨", price: 1200, unit: "un.", color: "ore" },
+  concentrate: { name: "Concentrado mineral", icon: "⛰️", price: 42, unit: "un.", color: "concentrate" },
+  mixed: { name: "Composto misto TR", icon: "🧪", price: 75, unit: "un.", color: "mixed" },
+  oxide: { name: "Óxido de terras raras", icon: "🔮", price: 125, unit: "un.", color: "oxide" },
+  metal: { name: "Metal de neodímio", icon: "🔩", price: 210, unit: "un.", color: "metal" },
+  alloy: { name: "Liga NdFeB", icon: "🛡️", price: 330, unit: "un.", color: "alloy" },
+  magnet: { name: "Ímã permanente NdFeB", icon: "🧲", price: 520, unit: "un.", color: "magnet" },
+  motor: { name: "Motor elétrico TR", icon: "⚙️", price: 850, unit: "un.", color: "motor" },
+  chip: { name: "Chip de alta precisão", icon: "💾", price: 1650, unit: "un.", color: "chip" },
+  battery: { name: "Bateria estado sólido", icon: "🔋", price: 2800, unit: "un.", color: "battery" },
+  quantum_core: { name: "Núcleo quântico", icon: "⚛️", price: 4500, unit: "un.", color: "quantum" },
+  vovo_artifact: { name: "Nave VovôBrDias", icon: "🚀", price: 10000, unit: "un.", color: "artifact" }
 };
 
 function matBadge(id){
@@ -41,74 +22,74 @@ function matBadge(id){
   return `<span class="mat-badge mat-${m.color}">${m.icon} ${m.name}</span>`;
 }
 
-// Total de 20 Missões divididas em 2 Fases de 10 missões cada
 const MISSIONS = [
-  // ==================== FASE 1: INDUSTRIAL (1 a 10) ====================
-  { title: "Extração mineral", desc: "Inicie a operação da jazida e extraia seu primeiro lote de minério.", detail: "A mineração começa com a lavra do corpo mineral e transporte do minério.", goal: "ore", target: 50, reward: 1200, stage: "Fase 1: Lavra" },
-  { title: "Britagem e moagem", desc: "Reduza o tamanho das rochas para liberar os minerais de interesse.", detail: "Britadores e moinhos diminuem a granulometria do minério.", goal: "concentrate", target: 20, reward: 1500, stage: "Fase 1: Cominuição" },
-  { title: "Beneficiamento mineral", desc: "Concentre os minerais portadores de terras raras.", detail: "Operações físicas como separação magnética elevam o teor dos minerais.", goal: "mixed", target: 12, reward: 1800, stage: "Fase 1: Concentração" },
-  { title: "Processamento químico", desc: "Faça o tratamento do concentrado para obter óxidos de terras raras.", detail: "Rotas hidrometalúrgicas envolvem lixiviação e purificação.", goal: "oxide", target: 4, reward: 2200, stage: "Fase 1: Hidrometalurgia" },
-  { title: "Separação dos elementos", desc: "Avance no fracionamento dos elementos de terras raras.", detail: "A separação individual exige extração por solventes.", goal: "oxide", target: 10, reward: 2600, stage: "Fase 1: Separação" },
-  { title: "Produção de óxidos", desc: "Amplie a produção de óxidos individuais de terras raras.", detail: "Óxidos como neodímio e praseodímio calcinados.", goal: "oxide", target: 20, reward: 3000, stage: "Fase 1: Óxidos" },
-  { title: "Refino e obtenção dos metais", desc: "Transforme óxidos selecionados em metais.", detail: "Obtenção de metais por redução metalotérmica.", goal: "metal", target: 10, reward: 3500, stage: "Fase 1: Metalurgia" },
-  { title: "Fabricação de ligas metálicas", desc: "Produza uma liga adequada à fabricação de ímãs permanentes.", detail: "Ligas NdFeB utilizam neodímio, ferro e boro.", goal: "alloy", target: 8, reward: 4200, stage: "Fase 1: Ligas" },
-  { title: "Produção de ímãs permanentes", desc: "Fabrique ímãs permanentes de neodímio-ferro-boro.", detail: "Compactação, sinterização e tratamentos posteriores.", goal: "magnet", target: 5, reward: 5000, stage: "Fase 1: Ímãs" },
-  { title: "Aplicação industrial", desc: "Forneça componentes magnéticos para motores elétricos e conclusão da Fase 1.", detail: "Ímãs de alto desempenho em motores elétricos e geradores.", goal: "motor", target: 3, reward: 10000, stage: "Fase 1: Conclusão & Nível" },
-
-  // ==================== FASE 2: CHIPS & QUANTUM (11 a 20) ====================
-  { title: "Microeletrônica avançada", desc: "Inicie a Fase 2 integrando motores e óxidos para fabricar chips de alta precisão.", detail: "Semicondutores essenciais para automação avançada.", goal: "chip", target: 5, reward: 15000, stage: "Fase 2: Nanotecnologia" },
-  { title: "Armazenamento de alta densidade", desc: "Fabrique baterias de estado sólido com ligas e óxidos purificados.", detail: "Armazenamento energético de altíssima eficiência.", goal: "battery", target: 4, reward: 20000, stage: "Fase 2: Energia" },
-  { title: "Propulsão de alta performance", desc: "Desenvolva o núcleo de propulsão magnética para veículos espaciais.", detail: "Combina motores elétricos e chips avançados.", goal: "quantum_core", target: 3, reward: 28000, stage: "Fase 2: Propulsão" },
-  { title: "Projeto Especial Aurora", desc: "Monte o protótipo inicial da espaçonave de exploração.", detail: "Integração de baterias, núcleos quânticos e ligas especiais.", goal: "vovo_artifact", target: 2, reward: 40000, stage: "Fase 2: Exploração" },
-  { title: "Nanofabricação em Massa", desc: "Estabeleça a linha massiva de chips eletrônicos de precisão.", detail: "A demanda global por semicondutores exige produção em larga escala.", goal: "chip", target: 15, reward: 60000, stage: "Fase 2: Semicondutores" },
-  { title: "Supercomputadores Quânticos", desc: "Construa núcleos quânticos para processamento de dados estelares.", detail: "Tecnologia de ponta alimentada por chips de silício e terras raras.", goal: "quantum_core", target: 8, reward: 90000, stage: "Fase 2: Supercomputação" },
-  { title: "Frota Estelar de VovôBrDias", desc: "Monte múltiplos Módulos Espaciais VovôBrDias usando chips e núcleos quânticos.", detail: "A expansão definitiva do império rumo às profundezas do universo.", goal: "vovo_artifact", target: 5, reward: 130000, stage: "Fase 2: Expansão Estelar" },
-  { title: "Monopólio Tecnológico", desc: "Domine o mercado intergaláctico de microchips de alta performance.", detail: "O topo absoluto da cadeia tecnológica sob a liderança do Diretor.", goal: "chip", target: 30, reward: 200000, stage: "Fase 2: Império Comercial" },
-  { title: "O Legado de VovôBrDias", desc: "Consolide a frota espacial definitiva e eternize o nome do Diretor!", detail: "A fase suprema da indústria de terras raras dedicada ao grande Diretor VovôBrDias.", goal: "vovo_artifact", target: 10, reward: 350000, stage: "Fase 2: O Legado" },
-  { title: "O Trono do Cosmos", desc: "A missão final definitiva: coroe o império supremo de VovôBrDias nas estrelas!", detail: "A coroação máxima do Diretor na história da mineração e tecnologia universal.", goal: "vovo_artifact", target: 20, reward: 1000000, stage: "Fase 2: Eternidade" }
+  { title: "Extração mineral", sticker: "⛏️", desc: "Inicie a operação da jazida e garanta seu lote inicial de minério bruto.", goal: "ore", target: 50, reward: 1200, stage: "Fase 1: Lavra" },
+  { title: "Britagem e moagem", sticker: "🏗️", desc: "Use o britador BM-1200 para quebrar as rochas e gerar concentrado mineral.", goal: "concentrate", target: 20, reward: 1500, stage: "Fase 1: Cominuição" },
+  { title: "Beneficiamento mineral", sticker: "🧪", desc: "Concentre os minerais portadores de terras raras por separação física.", goal: "mixed", target: 12, reward: 1800, stage: "Fase 1: Concentração" },
+  { title: "Processamento químico", sticker: "⚗️", desc: "Faça a lixiviação química para obter óxidos de terras raras.", goal: "oxide", target: 4, reward: 2200, stage: "Fase 1: Hidrometalurgia" },
+  { title: "Separação dos elementos", sticker: "🔬", desc: "Avance no fracionamento e purificação dos óxidos.", goal: "oxide", target: 10, reward: 2600, stage: "Fase 1: Separação" },
+  { title: "Produção de óxidos", sticker: "🔮", desc: "Amplie o estoque de óxidos puros de neodímio e praseodímio.", goal: "oxide", target: 20, reward: 3000, stage: "Fase 1: Óxidos" },
+  { title: "Refino e metais", sticker: "🔥", desc: "Transforme óxidos purificados em metal de neodímio.", goal: "metal", target: 10, reward: 3500, stage: "Fase 1: Metalurgia" },
+  { title: "Ligas metálicas NdFeB", sticker: "🛡️", desc: "Combine neodímio, ferro e boro para fundir ligas magnéticas.", goal: "alloy", target: 8, reward: 4200, stage: "Fase 1: Ligas" },
+  { title: "Ímãs permanentes", sticker: "🧲", desc: "Sintetize superímãs permanentes de altíssima potência.", goal: "magnet", target: 5, reward: 5000, stage: "Fase 1: Ímãs" },
+  { title: "Aplicação industrial", sticker: "⚙️", desc: "Monte motores elétricos de alto desempenho e conclua a Fase 1!", goal: "motor", target: 3, reward: 10000, stage: "Fase 1: Homenagem de Nível" },
+  { title: "Microeletrônica avançada", sticker: "💾", desc: "Inicie a Fase 2 fabricando chips de alta precisão.", goal: "chip", target: 5, reward: 15000, stage: "Fase 2: Nanotecnologia" },
+  { title: "Baterias de estado sólido", sticker: "🔋", desc: "Produza células de energia de altíssima densidade.", goal: "battery", target: 4, reward: 20000, stage: "Fase 2: Energia" },
+  { title: "Propulsão magnética", sticker: "⚛️", desc: "Construa núcleos quânticos para propulsão espacial.", goal: "quantum_core", target: 3, reward: 28000, stage: "Fase 2: Propulsão" },
+  { title: "Projeto Espacial Aurora", sticker: "🛸", desc: "Monte os primeiros módulos da Nave VovôBrDias.", goal: "vovo_artifact", target: 2, reward: 40000, stage: "Fase 2: Exploração" },
+  { title: "Nanofabricação em massa", sticker: "🖥️", desc: "Escale a linha de microchips para abastecer o mercado global.", goal: "chip", target: 15, reward: 60000, stage: "Fase 2: Semicondutores" },
+  { title: "Supercomputação quântica", sticker: "🌌", desc: "Expanda a produção de núcleos quânticos estelares.", goal: "quantum_core", target: 8, reward: 90000, stage: "Fase 2: Supercomputação" },
+  { title: "Frota Estelar VovôBrDias", sticker: "🚀", desc: "Construa uma esquadra de naves espaciais de exploração.", goal: "vovo_artifact", target: 5, reward: 130000, stage: "Fase 2: Expansão Estelar" },
+  { title: "Monopólio tecnológico", sticker: "👑", desc: "Domine o fornecimento global de chips avançados.", goal: "chip", target: 30, reward: 200000, stage: "Fase 2: Império Comercial" },
+  { title: "O Legado do Diretor", sticker: "🌠", desc: "Consolide a frota definitiva em homenagem a VovôBrDias.", goal: "vovo_artifact", target: 10, reward: 350000, stage: "Fase 2: O Legado" },
+  { title: "O Trono do Cosmos", sticker: "🏆", desc: "Coroe o império supremo nas estrelas!", goal: "vovo_artifact", target: 20, reward: 1000000, stage: "Fase 2: Eternidade" }
 ];
 
 const PROCESSES = [
-  { id: "crush", title: "Britagem e moagem", icon: "⚒", desc: "Reduz o tamanho do minério para liberar os minerais.", input: "ore", qty: 10, output: "concentrate", out: 5, cost: 120, unlock: 0, mission: 1, learn: "Na prática, a cominuição prepara o minério para as etapas de concentração." },
-  { id: "benefit", title: "Beneficiamento", icon: "◈", desc: "Concentra os minerais de interesse por métodos físicos.", input: "concentrate", qty: 5, output: "mixed", out: 3, cost: 180, unlock: 1, mission: 2, learn: "A recuperação e o teor do concentrado dependem da mineralogia e da rota escolhida." },
-  { id: "chem", title: "Processamento químico", icon: "⚗", desc: "Trata o concentrado e prepara a solução para purificação.", input: "mixed", qty: 4, output: "oxide", out: 2, cost: 260, unlock: 2, mission: 3, learn: "A lixiviação transfere os elementos de interesse para uma solução." },
-  { id: "separate", title: "Separação e purificação", icon: "⇄", desc: "Separa e purifica os elementos de terras raras.", input: "oxide", qty: 3, output: "oxide", out: 5, cost: 380, unlock: 4, mission: 4, learn: "A separação individual é complexa devido à similaridade química." },
-  { id: "metal", title: "Redução e refino", icon: "♨", desc: "Obtém metal a partir do óxido selecionado.", input: "oxide", qty: 3, output: "metal", out: 2, cost: 520, unlock: 5, mission: 6, learn: "Processo metalúrgico de redução para obtenção de metal puro." },
-  { id: "alloy", title: "Produção de ligas", icon: "▣", desc: "Combina metais e elementos de liga para formar NdFeB.", input: "metal", qty: 3, output: "alloy", out: 2, cost: 700, unlock: 6, mission: 7, learn: "A liga NdFeB combina neodímio, ferro e boro." },
-  { id: "magnet", title: "Fabricação de ímãs", icon: "✥", desc: "Processa a liga para produzir ímãs permanentes.", input: "alloy", qty: 2, output: "magnet", out: 1, cost: 900, unlock: 7, mission: 8, learn: "Envolve alinhamento de pó, compactação e sinterização." },
-  { id: "motor", title: "Componente industrial", icon: "⚙", desc: "Integra os ímãs em componentes para motores elétricos.", input: "magnet", qty: 2, output: "motor", out: 1, cost: 1200, unlock: 8, mission: 9, learn: "Motores de alta densidade de potência." },
-  { id: "chip", title: "Fabricação de chip eletrônico", icon: "❖", desc: "Integra elementos de terras raras em microcomponentes (Liberado na Fase 2).", input: "motor", qty: 1, extraInput: "oxide", extraQty: 2, output: "chip", out: 1, cost: 1800, unlock: 10, mission: 11, learn: "Essencial em semicondutores e telas avançadas." },
-  { id: "battery", title: "Bateria de estado sólido", icon: "⚡", desc: "Fabrica baterias de alta densidade energética para veículos avançados.", input: "alloy", qty: 2, extraInput: "oxide", extraQty: 2, output: "battery", out: 1, cost: 2500, unlock: 11, mission: 12, learn: "Baterias avançadas usando compostos de terras raras." },
-  { id: "quantum_core", title: "Núcleo magnético quântico", icon: "⚛", desc: "Cria o propulsor magnético para espaçonaves.", input: "motor", qty: 2, extraInput: "chip", extraQty: 1, output: "quantum_core", out: 1, cost: 4000, unlock: 12, mission: 13, learn: "Tecnologia de propulsão avançada." },
-  { id: "vovo_artifact", title: "Módulo Espacial VovôBrDias", icon: "🚀", desc: "Montagem do artefato supremo em homenagem ao Diretor VovôBrDias!", input: "quantum_core", qty: 1, extraInput: "battery", extraQty: 2, output: "vovo_artifact", out: 1, cost: 8000, unlock: 13, mission: 14, isFinalProject: true, learn: "O ápice da tecnologia industrial e espacial da Mineradora Aurora, eternizando o Diretor VovôBrDias!" }
+  { id: "crush", title: "Britador BM-1200 (Britagem)", icon: "🏗️", desc: "Tritura rochas brutas de minério liberando minerais valiosos.", input: "ore", qty: 10, output: "concentrate", out: 5, cost: 120, unlock: 0, learn: "O britador de mandíbulas reduz blocos de rocha em brita concentrada!" },
+  { id: "benefit", title: "Beneficiamento Magnético", icon: "🧲", desc: "Separa fisicamente os minerais portadores de terras raras.", input: "concentrate", qty: 5, output: "mixed", out: 3, cost: 180, unlock: 1, learn: "A separação magnética eleva o teor de terras raras no composto." },
+  { id: "chem", title: "Reator Hidrometalúrgico", icon: "⚗️", desc: "Dissolve o composto misto para extrair óxidos puros.", input: "mixed", qty: 4, output: "oxide", out: 2, cost: 260, unlock: 2, learn: "A lixiviação ácida separa os elementos químicos da rocha." },
+  { id: "separate", title: "Purificação por Solventes", icon: "🔬", desc: "Multiplica e refina óxidos de terras raras de alta pureza.", input: "oxide", qty: 3, output: "oxide", out: 5, cost: 380, unlock: 4, learn: "Extração por solventes isola elementos individuais como o Neodímio." },
+  { id: "metal", title: "Forno de Redução Metalúrgica", icon: "🔥", desc: "Converte óxido purificado em metal de neodímio sólido.", input: "oxide", qty: 3, output: "metal", out: 2, cost: 520, unlock: 5, learn: "Altas temperaturas reduzem o óxido em metal puro." },
+  { id: "alloy", title: "Fundição de Liga NdFeB", icon: "🛡️", desc: "Funde neodímio, ferro e boro em superligas magnéticas.", input: "metal", qty: 3, output: "alloy", out: 2, cost: 700, unlock: 6, learn: "A liga NdFeB é a base dos ímãs mais fortes do mundo." },
+  { id: "magnet", title: "Sinterização de Ímãs", icon: "🧲", desc: "Compacta e magnetiza a liga formando ímãs permanentes.", input: "alloy", qty: 2, output: "magnet", out: 1, cost: 900, unlock: 7, learn: "Ímãs permanentes mantêm seu campo magnético sem gastar energia." },
+  { id: "motor", title: "Montagem de Motores TR", icon: "⚙️", desc: "Integra superímãs em motores elétricos de alta potência.", input: "magnet", qty: 2, output: "motor", out: 1, cost: 1200, unlock: 8, learn: "Essenciais para carros elétricos, turbinas eólicas e robótica." },
+  { id: "chip", title: "Fábrica de Chips (Fase 2)", icon: "💾", desc: "Grava circuitos nanométricos com terras raras.", input: "motor", qty: 1, extraInput: "oxide", extraQty: 2, output: "chip", out: 1, cost: 1800, unlock: 10, learn: "Semicondutores de precisão para computação avançada." },
+  { id: "battery", title: "Células de Estado Sólido", icon: "🔋", desc: "Produz baterias ultra-seguras de longa duração.", input: "alloy", qty: 2, extraInput: "oxide", extraQty: 2, output: "battery", out: 1, cost: 2500, unlock: 11, learn: "Armazenamento energético de nova geração." },
+  { id: "quantum_core", title: "Reator de Núcleo Quântico", icon: "⚛️", desc: "Cria propulsores magnéticos para viagens espaciais.", input: "motor", qty: 2, extraInput: "chip", extraQty: 1, output: "quantum_core", out: 1, cost: 4000, unlock: 12, learn: "Propulsão eletromagnética de impulso específico elevado." },
+  { id: "vovo_artifact", title: "Estaleiro Nave VovôBrDias", icon: "🚀", desc: "Constrói o módulo espacial supremo do Diretor!", input: "quantum_core", qty: 1, extraInput: "battery", extraQty: 2, output: "vovo_artifact", out: 1, cost: 8000, unlock: 13, isFinalProject: true, learn: "O ápice da engenharia espacial da Mineradora Aurora!" }
 ];
 
 const UPGRADES = [
-  { id: "crusher", name: "Britador de mandíbulas", icon: "⚒", desc: "Melhora a capacidade de britagem e reduz custo operacional.", cost: 1800, eff: 5 },
-  { id: "mill", name: "Moinho industrial", icon: "⚙", desc: "Aumenta a eficiência de moagem.", cost: 2600, eff: 8 },
-  { id: "separator", name: "Unidade de separação", icon: "⇄", desc: "Aprimora a capacidade de purificação.", cost: 4200, eff: 12 },
-  { id: "lab", name: "Laboratório de controle", icon: "⚗", desc: "Melhora o controle de qualidade e rendimento.", cost: 5500, eff: 10 },
-  { id: "automation", name: "Automação industrial", icon: "▦", desc: "Otimiza operações e reduz custos.", cost: 8000, eff: 18 },
-  { id: "plant", name: "Expansão da planta", icon: "▤", desc: "Amplia a capacidade global de produção.", cost: 12000, eff: 25 },
-  { id: "space_hub", name: "Central Espacial VovôBrDias", icon: "🛰", desc: "Tecnologia orbital para suporte à fase espacial.", cost: 25000, eff: 35 }
+  { id: "crusher", name: "Britador de Mandíbulas Turbo", icon: "🏗️", desc: "Aumenta a velocidade de britagem e reduz custos.", cost: 1800, eff: 5 },
+  { id: "mill", name: "Moinho de Bolas Pesado", icon: "⚙️", desc: "Pulveriza rochas com máxima eficiência.", cost: 2600, eff: 8 },
+  { id: "separator", name: "Separador Magnético Laser", icon: "🧲", desc: "Aprimora a pureza da extração mineral.", cost: 4200, eff: 12 },
+  { id: "lab", name: "Laboratório Quântico", icon: "🔬", desc: "Otimiza reações químicas e rendimento.", cost: 5500, eff: 10 },
+  { id: "automation", name: "Robótica Industrial IA", icon: "🤖", desc: "Automatiza linhas e corta despesas operacionais.", cost: 8000, eff: 18 },
+  { id: "plant", name: "Megacomplexo Refinador", icon: "🏭", desc: "Expande a capacidade máxima da fábrica.", cost: 12000, eff: 25 },
+  { id: "space_hub", name: "Estação Orbital VovôBrDias", icon: "🛰️", desc: "Suporte espacial definitivo para a Fase 2.", cost: 25000, eff: 35 }
 ];
 
 const DEFAULT_STATE = {
-  coins: 35000,
+  coins: 15000,
   stock: { ore: 1200, concentrate: 0, mixed: 0, oxide: 0, metal: 0, alloy: 0, magnet: 0, motor: 0, chip: 0, battery: 0, quantum_core: 0, vovo_artifact: 0 },
   produced: { concentrate: 0, mixed: 0, oxide: 0, metal: 0, alloy: 0, magnet: 0, motor: 0, chip: 0, battery: 0, quantum_core: 0, vovo_artifact: 0 },
   completed: [],
   production: 0,
-  upgrades: [],
-  company: "Mineradora Aurora (VovôBrDias)"
+  upgrades: []
 };
 
+const SAVE_KEY = "terrasRarasGameV4";
 let state = loadState();
+let sfxEnabled = true;
+let audioVoiceEnabled = true;
+let lastSpokenText = "Bem-vindo Diretor! Suas máquinas estão prontas.";
 
 function loadState(){
   try{
-    const saved = JSON.parse(localStorage.getItem("terrasRarasSaveProV3_6"));
-    if(saved){
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(raw){
+      const saved = JSON.parse(raw);
       return {
         ...structuredClone(DEFAULT_STATE),
         ...saved,
@@ -122,48 +103,81 @@ function loadState(){
   return structuredClone(DEFAULT_STATE);
 }
 
-async function saveToCloud(currentState){
-  try{
-    const docRef = doc(db, "users", playerId);
-    await setDoc(docRef, { ...currentState, updatedAt: new Date().toISOString() });
-    const statusEl = document.getElementById("cloudSyncStatus");
-    if(statusEl) statusEl.textContent = "☁ Nuvem Ativa";
-  }catch(e){
-    console.error("Erro ao salvar no Firebase:", e);
-    const statusEl = document.getElementById("cloudSyncStatus");
-    if(statusEl) statusEl.textContent = "⚠ Erro na Nuvem";
-  }
-}
-
-async function loadFromCloud(){
-  try{
-    const docRef = doc(db, "users", playerId);
-    const snap = await getDoc(docRef);
-    if(snap.exists()){
-      const cloudData = snap.data();
-      state = {
-        ...structuredClone(DEFAULT_STATE),
-        ...cloudData,
-        stock: { ...DEFAULT_STATE.stock, ...(cloudData.stock || {}) },
-        produced: { ...DEFAULT_STATE.produced, ...(cloudData.produced || {}) },
-        completed: Array.isArray(cloudData.completed) ? cloudData.completed : [],
-        upgrades: Array.isArray(cloudData.upgrades) ? cloudData.upgrades : []
-      };
-      localStorage.setItem("terrasRarasSaveProV3_6", JSON.stringify(state));
-      renderAll();
-      toast("Progresso sincronizado do Firebase com sucesso!");
-    }
-  }catch(e){
-    console.error("Erro ao carregar do Firebase:", e);
-  }
-}
-
 function save(){
   try{
-    localStorage.setItem("terrasRarasSaveProV3_6", JSON.stringify(state));
-    saveToCloud(state);
+    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
   }catch(e){}
   renderAll();
+}
+
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let actx = null;
+
+function playSfx(type){
+  if(!sfxEnabled || !AudioCtx) return;
+  try{
+    if(!actx) actx = new AudioCtx();
+    if(actx.state === "suspended") actx.resume();
+    const now = actx.currentTime;
+    const osc = actx.createOscillator();
+    const gain = actx.createGain();
+    osc.connect(gain);
+    gain.connect(actx.destination);
+
+    if(type === "click"){
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(520, now);
+      osc.frequency.exponentialRampToValueAtTime(180, now + 0.06);
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+      osc.start(now);
+      osc.stop(now + 0.06);
+    } else if(type === "crush"){
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(140, now);
+      osc.frequency.linearRampToValueAtTime(75, now + 0.18);
+      osc.frequency.linearRampToValueAtTime(190, now + 0.32);
+      gain.gain.setValueAtTime(0.18, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+      osc.start(now);
+      osc.stop(now + 0.35);
+    } else if(type === "coin"){
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(987.77, now);
+      osc.frequency.setValueAtTime(1318.51, now + 0.08);
+      gain.gain.setValueAtTime(0.16, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+      osc.start(now);
+      osc.stop(now + 0.3);
+    } else if(type === "win"){
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, idx) => {
+        const o = actx.createOscillator();
+        const g = actx.createGain();
+        o.type = "triangle";
+        o.connect(g);
+        g.connect(actx.destination);
+        o.frequency.setValueAtTime(freq, now + idx * 0.09);
+        g.gain.setValueAtTime(0.15, now + idx * 0.09);
+        g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.09 + 0.28);
+        o.start(now + idx * 0.09);
+        o.stop(now + idx * 0.09 + 0.28);
+      });
+    }
+  }catch(e){}
+}
+
+function spawnFloatingText(text, color = "#4ade80"){
+  const layer = document.getElementById("fxLayer");
+  if(!layer) return;
+  const el = document.createElement("div");
+  el.className = "fx-popup";
+  el.textContent = text;
+  el.style.color = color;
+  el.style.left = (45 + (Math.random() * 20 - 10)) + "%";
+  el.style.top = (45 + (Math.random() * 14 - 7)) + "%";
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 1250);
 }
 
 const fmt = n => Number(n || 0).toLocaleString("pt-BR");
@@ -179,36 +193,20 @@ function effectiveCost(p){
   return Math.max(10, Math.round(p.cost * (1 - discountRate)));
 }
 
-let audioEnabled = true;
-let lastSpokenText = "Bem-vindo ao Centro de Comando Terras Raras.";
-
-function setAudioStatus(msg){
-  const status = $("audioStatus");
-  if(status) status.textContent = msg;
-}
-
 function speak(text){
   lastSpokenText = String(text || "").replace(/<[^>]*>/g, "");
-  if(!audioEnabled || !lastSpokenText || !("speechSynthesis" in window)) return;
+  if(!audioVoiceEnabled || !lastSpokenText || !("speechSynthesis" in window)) return;
   window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(lastSpokenText);
-  utterance.lang = "pt-BR";
-  utterance.rate = 0.95;
-  utterance.pitch = 1;
-  const voices = window.speechSynthesis.getVoices();
-  const portuguese = voices.find(v => /^pt-BR$/i.test(v.lang)) || voices.find(v => /^pt/i.test(v.lang));
-  if(portuguese) utterance.voice = portuguese;
-  window.speechSynthesis.speak(utterance);
-}
-
-function stopSpeech(){
-  if("speechSynthesis" in window) window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(lastSpokenText);
+  u.lang = "pt-BR";
+  u.rate = 1.0;
+  window.speechSynthesis.speak(u);
 }
 
 function speakCurrentMission(){
   const i = activeMissionIndex();
   if(i < 0){
-    speak("Parabéns! Todas as vinte missões foram concluídas com sucesso!");
+    speak("Parabéns Diretor! Todas as vinte missões foram concluídas!");
     return;
   }
   const m = MISSIONS[i];
@@ -237,11 +235,10 @@ function toast(msg){
   el.textContent = msg;
   el.classList.add("show");
   clearTimeout(toast.timer);
-  toast.timer = setTimeout(() => el.classList.remove("show"), 2800);
-  speak(msg);
+  toast.timer = setTimeout(() => el.classList.remove("show"), 2600);
 }
 
-function showModal(title, text, symbol = "✓", eyebrow = "NOTIFICAÇÃO"){
+function showModal(title, text, symbol = "🎉", eyebrow = "CONQUISTA"){
   $("modalTitle").textContent = title;
   $("modalText").innerHTML = text;
   $("modalSymbol").textContent = symbol;
@@ -250,27 +247,24 @@ function showModal(title, text, symbol = "✓", eyebrow = "NOTIFICAÇÃO"){
 }
 
 function closeModal(){
+  playSfx("click");
   $("modalBackdrop").classList.remove("show");
 }
 
 function changeView(name){
+  playSfx("click");
   document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + name));
   document.querySelectorAll(".nav-link").forEach(b => b.classList.toggle("active", b.dataset.view === name));
   const labels = {
-    dashboard: "Visão geral",
-    missions: "Missões",
-    production: "Produção",
-    market: "Mercado",
-    upgrades: "Equipamentos"
+    dashboard: "Base Central",
+    missions: "Quadro de Missões",
+    production: "Fábrica & Brita",
+    market: "Bolsa & Vendas",
+    upgrades: "Hangar & Máquinas"
   };
-  const titleEl = $("pageTitle");
-  if(titleEl) titleEl.textContent = labels[name] || "Visão geral";
-  
-  const sidebar = $("sidebar");
-  const backdrop = $("sidebarBackdrop");
-  if(sidebar) sidebar.classList.remove("open");
-  if(backdrop) backdrop.classList.remove("show");
-
+  if($("pageTitle")) $("pageTitle").textContent = labels[name] || "Base Central";
+  if($("sidebar")) $("sidebar").classList.remove("open");
+  if($("sidebarBackdrop")) $("sidebarBackdrop").classList.remove("show");
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -279,8 +273,8 @@ function renderStock(){
   if(!list) return;
   list.innerHTML = Object.entries(MATERIALS).map(([id, m]) => `
     <div class="stock-row">
-      <span class="material-icon mat-icon-${m.color}">${m.icon}</span>
-      <div>${matBadge(id)}<small class="stock-sub">Disponível</small></div>
+      <span class="material-icon">${m.icon}</span>
+      <div>${matBadge(id)}<small class="stock-sub">Valor: ${fmt(m.price)} CR/un.</small></div>
       <strong class="stock-qty">${fmt(state.stock[id])} ${m.unit}</strong>
     </div>
   `).join("");
@@ -292,12 +286,59 @@ function renderChain(){
   const displayMissions = MISSIONS.slice(0, 10);
   strip.innerHTML = displayMissions.map((m, i) => `
     <div class="chain-step ${state.completed.includes(i) ? "done" : i === activeMissionIndex() ? "" : "locked"}">
-      <span class="step-no">FASE 1 · ${String(i + 1).padStart(2, "0")}</span>
+      <span class="step-no">${m.sticker} ETAPA ${String(i + 1).padStart(2, "0")}</span>
       <strong>${m.title}</strong>
-      <div style="margin-top:6px">${matBadge(m.goal)}</div>
+      <div style="margin-top:8px">${matBadge(m.goal)}</div>
     </div>
   `).join("");
 }
+
+const STAGE_THEMES = [
+  {
+    name: "FASE 1 · BRITADOR BM-1200",
+    svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="sky1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1e3a5f"/><stop offset="100%" stop-color="#091321"/></linearGradient>
+      </defs>
+      <rect width="640" height="280" fill="url(#sky1)"/>
+      <polygon points="80,280 210,95 340,280" fill="#132538" stroke="#f59e0b" stroke-width="2"/>
+      <polygon points="260,280 390,115 520,280" fill="#0f1c2e" stroke="#22c55e" stroke-width="2"/>
+      <rect x="290" y="135" width="170" height="85" rx="14" fill="#eab308" stroke="#040812" stroke-width="3"/>
+      <rect x="310" y="110" width="90" height="35" rx="6" fill="#f59e0b" stroke="#040812" stroke-width="2"/>
+      <line x1="450" y1="175" x2="545" y2="135" stroke="#94a3b8" stroke-width="10" stroke-linecap="round"/>
+      <rect x="300" y="215" width="150" height="24" rx="12" fill="#1e293b" stroke="#22c55e" stroke-width="2"/>
+      <circle cx="325" cy="227" r="7" fill="#22c55e"/>
+      <circle cx="375" cy="227" r="7" fill="#22c55e"/>
+      <circle cx="425" cy="227" r="7" fill="#22c55e"/>
+      <circle cx="555" cy="155" r="6" fill="#94a3b8"><animate attributeName="cy" values="145;235" dur="1.1s" repeatCount="indefinite"/></circle>
+      <circle cx="565" cy="175" r="5" fill="#cbd5e1"><animate attributeName="cy" values="145;235" dur="0.9s" repeatCount="indefinite"/></circle>
+      <text x="410" y="264" text-anchor="middle" fill="#fbbf24" font-family="Chakra Petch,sans-serif" font-weight="700" font-size="13" letter-spacing="1.5">BRITADOR MÓVEL BM-1200 EM OPERAÇÃO</text>
+    </svg>`
+  },
+  {
+    name: "FASE 1 · REFINARIA QUÍMICA",
+    svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg">
+      <rect width="640" height="280" fill="#091321"/>
+      <rect x="250" y="65" width="120" height="155" rx="20" fill="#15273f" stroke="#a855f7" stroke-width="3"/>
+      <circle cx="310" cy="140" r="32" fill="#a855f7" opacity="0.35"><animate attributeName="r" values="25;38;25" dur="2s" repeatCount="indefinite"/></circle>
+      <path d="M370 110 H470 V190" fill="none" stroke="#06b6d4" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="470" cy="205" r="14" fill="#22c55e"/>
+      <text x="360" y="255" text-anchor="middle" fill="#c084fc" font-family="Chakra Petch,sans-serif" font-weight="700" font-size="13" letter-spacing="1.5">REATOR HIDROMETALÚRGICO DE ÓXIDOS</text>
+    </svg>`
+  },
+  {
+    name: "FASE 2 · NANOFABRICAÇÃO & ESPAÇO",
+    svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg">
+      <rect width="640" height="280" fill="#040812"/>
+      <circle cx="480" cy="70" r="3" fill="#fff"/>
+      <circle cx="240" cy="50" r="2" fill="#22c55e"/>
+      <circle cx="550" cy="190" r="2.5" fill="#06b6d4"/>
+      <rect x="260" y="75" width="220" height="120" rx="18" fill="#0f1c2e" stroke="#06b6d4" stroke-width="3"/>
+      <circle cx="370" cy="135" r="28" fill="#22c55e" opacity="0.8"><animate attributeName="opacity" values="0.4;1;0.4" dur="1.6s" repeatCount="indefinite"/></circle>
+      <text x="370" y="235" text-anchor="middle" fill="#06b6d4" font-family="Chakra Petch,sans-serif" font-weight="700" font-size="13" letter-spacing="1.5">FASE 2 · CHIPS QUÂNTICOS & FROTA ESTELAR</text>
+    </svg>`
+  }
+];
 
 function renderDashboard(){
   const idx = activeMissionIndex();
@@ -308,49 +349,35 @@ function renderDashboard(){
   if($("statMissions")) $("statMissions").innerHTML = `${state.completed.length} <small>/ 20</small>`;
   if($("companyLevel")) $("companyLevel").textContent = state.completed.length >= 10 ? 2 : 1;
   if($("missionCount")) $("missionCount").textContent = idx < 0 ? "★" : idx + 1;
-  if($("heroIndex")){
-    $("heroIndex").innerHTML = `${idx < 0 ? "20" : String(idx + 1).padStart(2, "0")} <span>/ 20</span>`;
-  }
+  if($("heroIndex")) $("heroIndex").innerHTML = `${idx < 0 ? "20" : String(idx + 1).padStart(2, "0")} <span>/ 20</span>`;
 
   const isPhase2 = state.completed.length >= 10;
-  if($("heroKicker")) $("heroKicker").textContent = isPhase2 ? "FASE 2 · NANOFABRICAÇÃO DE CHIPS & QUANTUM" : "FASE 1 · INFRAESTRUTURA INDUSTRIAL (1-10)";
-  if($("heroTitle")) $("heroTitle").innerHTML = isPhase2 ? "Era dos<br><em>chips.</em>" : "Maquinaria &<br><em>excelência.</em>";
-  if($("heroDesc")) $("heroDesc").textContent = isPhase2 
-    ? "A Fase 2 está ativa! Produza chips avançados, núcleos quânticos e domine o império estelar." 
-    : "Conclua as 10 primeiras missões industriais para receber a Homenagem de Nível e desbloquear a Fase 2.";
+  const theme = isPhase2 ? STAGE_THEMES[2] : (state.completed.length >= 3 ? STAGE_THEMES[1] : STAGE_THEMES[0]);
+  if($("heroScene")) $("heroScene").innerHTML = `${theme.svg}<span class="hero-stage-tag">${theme.name}</span>`;
+
+  if($("heroKicker")) $("heroKicker").textContent = isPhase2 ? "FASE 2 · NANOFABRICAÇÃO & ESPAÇO (11-20)" : "FASE 1 · MINERAÇÃO & BRITAGEM (1-10)";
+  if($("heroTitle")) $("heroTitle").innerHTML = isPhase2 ? "Era dos Chips<br><em>& Estrelas!</em>" : "Britador BM-1200<br><em>em ação!</em>";
 
   if(idx < 0){
-    if($("nextMissionEyebrow")) $("nextMissionEyebrow").textContent = "IMPÉRIO VOVÔBRDIAS CONSOLIDADO";
-    if($("nextMissionTitle")) $("nextMissionTitle").textContent = "O Trono do Cosmos é seu!";
-    if($("nextMissionDesc")) $("nextMissionDesc").innerHTML = `Parabéns Diretor VovôBrDias! Todas as 20 missões foram concluídas com glória suprema.`;
+    if($("nextMissionEyebrow")) $("nextMissionEyebrow").textContent = "CAMPANHA ZERADA!";
+    if($("nextMissionTitle")) $("nextMissionTitle").textContent = "🏆 O Trono do Cosmos é seu!";
+    if($("nextMissionDesc")) $("nextMissionDesc").innerHTML = `Parabéns Diretor VovôBrDias! Todas as 20 missões foram conquistadas!`;
     if($("nextMissionBadge")) $("nextMissionBadge").textContent = "CONCLUÍDA";
     if($("missionProgressText")) $("missionProgressText").textContent = "100%";
     if($("missionProgressBar")) $("missionProgressBar").style.width = "100%";
     if($("nextMissionActionBtn")) $("nextMissionActionBtn").style.display = "none";
-  }else{
-    if($("nextMissionEyebrow")) $("nextMissionEyebrow").textContent = isPhase2 ? "OBJETIVO DA FASE 2" : "PRÓXIMO OBJETIVO (FASE 1)";
-    if($("nextMissionTitle")) $("nextMissionTitle").textContent = `Missão ${String(idx + 1).padStart(2, "0")} · ${MISSIONS[idx].title}`;
-    if($("nextMissionDesc")) $("nextMissionDesc").innerHTML = `${MISSIONS[idx].desc} Meta: <strong>${MISSIONS[idx].target} un.</strong> de ${matBadge(MISSIONS[idx].goal)}.`;
-    if($("nextMissionBadge")) $("nextMissionBadge").textContent = isPhase2 ? "FASE 2 ATIVA" : "FASE 1";
-    if($("missionProgressText")) $("missionProgressText").textContent = missionProgress(idx) + "%";
-    if($("missionProgressBar")) $("missionProgressBar").style.width = missionProgress(idx) + "%";
+  } else {
+    const m = MISSIONS[idx];
+    const prog = missionProgress(idx);
+    if($("nextMissionEyebrow")) $("nextMissionEyebrow").textContent = `${m.sticker} ${m.stage}`;
+    if($("nextMissionTitle")) $("nextMissionTitle").textContent = `Missão ${String(idx + 1).padStart(2, "0")} · ${m.title}`;
+    if($("nextMissionDesc")) $("nextMissionDesc").innerHTML = `${m.desc} Meta: <strong>${m.target} un.</strong> de ${matBadge(m.goal)}.`;
+    if($("nextMissionBadge")) $("nextMissionBadge").textContent = prog >= 100 ? "🎉 PRONTA!" : "EM ANDAMENTO";
+    if($("missionProgressText")) $("missionProgressText").textContent = prog + "%";
+    if($("missionProgressBar")) $("missionProgressBar").style.width = prog + "%";
     if($("nextMissionActionBtn")) $("nextMissionActionBtn").style.display = "inline-flex";
   }
 
-  const dashOffer = $("finalChipOfferDashboard");
-  if(dashOffer){
-    dashOffer.innerHTML = (state.completed.length >= MISSIONS.length) ? `
-      <div class="final-chip-card">
-        <div class="final-chip-head"><span class="final-chip-icon">🚀</span><div><span class="eyebrow" style="color:var(--accent)">O LEGADO SUPREMO</span><h4>Império de VovôBrDias Eternizado!</h4></div></div>
-        <p>Você completou todas as 20 missões e dominou o cosmos!</p>
-      </div>
-    ` : isPhase2 ? `
-      <div class="final-chip-card" style="border-color:var(--cyan)">
-        <div class="final-chip-head"><span class="final-chip-icon" style="background:rgba(6,182,212,0.2);color:var(--cyan)">❖</span><div><span class="eyebrow" style="color:var(--cyan)">FASE 2 EM ANDAMENTO</span><h4>Foco em Nanofabricação & Chips</h4></div></div>
-        <p>Aproveite os processos avançados de chips e núcleos quânticos para acelerar seu império.</p>
-      </div>
-    ` : "";
-  }
   renderStock();
   renderChain();
 }
@@ -359,28 +386,7 @@ function renderMissions(){
   const pct = Math.round(state.completed.length / 20 * 100);
   if($("missionSummaryCount")) $("missionSummaryCount").textContent = `${state.completed.length}/20`;
   if($("allMissionProgress")) $("allMissionProgress").style.width = pct + "%";
-  if($("allMissionPercent")) $("allMissionPercent").textContent = `${pct}% concluído (Fase 1 & Fase 2)`;
-
-  const isPhase2Unlocked = state.completed.length >= 10;
-  const mOffer = $("finalChipOfferMissions");
-  if(mOffer){
-    mOffer.innerHTML = (state.completed.length >= MISSIONS.length) ? `
-      <div class="final-chip-card" style="margin-bottom:20px;">
-        <div class="final-chip-head"><span class="final-chip-icon">🚀</span><div><span class="eyebrow" style="color:var(--accent)">O LEGADO SUPREMO</span><h4>Todas as 20 missões concluídas!</h4></div></div>
-        <p>Você completou a Fase 1 e a Fase 2 com excelência absoluta!</p>
-      </div>
-    ` : isPhase2Unlocked ? `
-      <div class="final-chip-card" style="margin-bottom:20px;border-color:var(--cyan)">
-        <div class="final-chip-head"><span class="final-chip-icon" style="background:rgba(6,182,212,0.2);color:var(--cyan)">🏆</span><div><span class="eyebrow" style="color:var(--cyan)">FASE 2 ATIVA · NÍVEL 2 ALCANÇADO</span><h4>Era dos Chips & Nanotecnologia</h4></div></div>
-        <p>Parabéns pela homenagem de nível! Agora execute as missões de fabricação em massa de chips e supercomputação quântica.</p>
-      </div>
-    ` : `
-      <div class="final-chip-card" style="margin-bottom:20px;border-color:var(--amber)">
-        <div class="final-chip-head"><span class="final-chip-icon" style="background:rgba(245,158,11,0.2);color:var(--amber)">⭐</span><div><span class="eyebrow" style="color:var(--amber)">FASE 1 EM ANDAMENTO</span><h4>Conclua as 10 primeiras missões</h4></div></div>
-        <p>Complete a 10ª missão para receber a Homenagem de Nível do Diretor VovôBrDias e desbloquear a Fase 2.</p>
-      </div>
-    `;
-  }
+  if($("allMissionPercent")) $("allMissionPercent").textContent = `${pct}% concluído`;
 
   const mList = $("missionList");
   if(!mList) return;
@@ -389,28 +395,25 @@ function renderMissions(){
     const unlocked = i === activeMissionIndex() || done;
     const progress = done ? 100 : unlocked ? missionProgress(i) : 0;
     const readyToClaim = unlocked && !done && (state.stock[m.goal] || 0) >= m.target;
-    const isPhase2Mission = i >= 10;
     return `
-      <article class="mission-card ${done ? "completed" : unlocked ? "unlocked" : "locked"} ${isPhase2Mission ? 'phase2-mission-card' : ''}">
-        <div class="mission-number">${done ? "✓" : String(i + 1).padStart(2, "0")}</div>
+      <article class="mission-card ${done ? "completed" : unlocked ? "unlocked" : "locked"}">
+        <div class="mission-number">${done ? "✅" : m.sticker}</div>
         <div class="mission-info">
-          <h3>${m.title} ${isPhase2Mission ? '<span style="color:var(--cyan);font-size:10px;margin-left:6px">[FASE 2]</span>' : '<span style="color:var(--accent);font-size:10px;margin-left:6px">[FASE 1]</span>'}</h3>
+          <h3>Missão ${String(i + 1).padStart(2, "0")}: ${m.title}</h3>
           <p>${m.desc}</p>
-          <div class="mission-reward">Meta: <strong>${m.target} un.</strong> de ${matBadge(m.goal)} · Recompensa: ◈ ${fmt(m.reward)} CR · ${m.stage}</div>
-          <div class="progress-track" style="margin-top:10px;max-width:280px"><span style="width:${progress}%"></span></div>
+          <div class="mission-reward">Meta: <strong>${m.target} un.</strong> de ${matBadge(m.goal)} · Prêmio: 🪙 <strong>+${fmt(m.reward)} CR</strong></div>
+          <div class="progress-track" style="margin-top:10px;max-width:300px"><span style="width:${progress}%"></span></div>
         </div>
         <div class="mission-action">
-          <small>${done ? "CONCLUÍDA" : readyToClaim ? "PRONTA PARA RESGATE" : unlocked ? `${progress}% concluído` : "BLOQUEADA"}</small>
-          ${unlocked && !done ? `<button class="btn btn-primary mission-claim-btn" data-mission="${i}" type="button">Resgatar</button>` : ""}
+          <small>${done ? "CONQUISTADA" : readyToClaim ? "🎁 PRONTA PARA RESGATE!" : unlocked ? `${progress}% completo` : "🔒 BLOQUEADA"}</small>
+          ${unlocked && !done ? `<button class="btn ${readyToClaim ? "btn-light" : "btn-outline"} mission-claim-btn" data-mission="${i}" type="button">${readyToClaim ? "🎉 Resgatar Prêmio" : "Verificar"}</button>` : ""}
         </div>
       </article>
     `;
   }).join("");
 
   document.querySelectorAll(".mission-claim-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      completeMission(Number(btn.dataset.mission));
-    });
+    btn.addEventListener("click", () => completeMission(Number(btn.dataset.mission)));
   });
 }
 
@@ -423,32 +426,29 @@ function renderProcesses(){
     const hasMainInput = (state.stock[p.input] || 0) >= p.qty;
     const hasExtraInput = !p.extraInput || (state.stock[p.extraInput] || 0) >= p.extraQty;
     const enough = hasMainInput && hasExtraInput && state.coins >= cost;
-    const lockLabel = p.isFinalProject ? "Conclua missões anteriores" : "Missão anterior necessária";
     return `
-      <article class="process-card ${p.isFinalProject ? "final-process-card" : ""}" id="process-card-${p.id}">
+      <article class="process-card ${p.isFinalProject ? "final-process-card" : ""}">
         <div class="process-top">
-          <span class="process-icon">${p.icon}</span>
-          <span class="status-pill">${open ? (p.isFinalProject ? "SUPREMO" : "DISPONÍVEL") : "BLOQUEADO"}</span>
+          <span class="process-icon sticker-float">${p.icon}</span>
+          <span class="status-pill">${open ? "OPERACIONAL" : "🔒 BLOQUEADO"}</span>
         </div>
         <h3>${p.title}</h3>
         <p>${p.desc}</p>
         <div class="recipe">
-          <strong>Entrada:</strong> ${p.qty} ${matBadge(p.input)}${p.extraInput ? ` + ${p.extraQty} ${matBadge(p.extraInput)}` : ""}<br>
-          <strong>Saída:</strong> ${p.out} ${matBadge(p.output)}<br>
-          <strong>Produzido:</strong> <span class="produced-count">${fmt(state.produced[p.output] || 0)} ${MATERIALS[p.output].unit}</span><br>
-          <strong>Custo:</strong> ${fmt(cost)} CR
+          <strong>Consome:</strong> ${p.qty} ${matBadge(p.input)}${p.extraInput ? ` + ${p.extraQty} ${matBadge(p.extraInput)}` : ""}<br>
+          <strong>Produz:</strong> ${p.out} ${matBadge(p.output)}<br>
+          <strong>Estoque gerado:</strong> <span class="produced-count">${fmt(state.produced[p.output] || 0)} un.</span><br>
+          <strong>Energia/Custo:</strong> 🪙 ${fmt(cost)} CR
         </div>
         <button class="btn ${open && enough ? "btn-light" : "btn-outline"} process-run-btn" data-process="${p.id}" type="button" ${open && enough ? "" : "disabled"}>
-          ${!open ? lockLabel : !enough ? "Insumos ou CR insuficientes" : (p.isFinalProject ? "🚀 Construir Módulo VovôBrDias" : "▶ Executar processo")}
+          ${!open ? "Complete missões anteriores" : !enough ? "Faltam insumos ou CR" : `⚡ Acionar Máquina (+${p.out} un.)`}
         </button>
       </article>
     `;
   }).join("");
 
   document.querySelectorAll(".process-run-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      runProcess(btn.dataset.process);
-    });
+    btn.addEventListener("click", () => runProcess(btn.dataset.process));
   });
 
   const eff = 100 + totalEfficiencyBonus();
@@ -464,11 +464,11 @@ function renderMarket(){
     const qtyAvailable = state.stock[id] || 0;
     const disabled = qtyAvailable <= 0;
     return `
-      <article class="market-card ${id === "chip" || id === "vovo_artifact" ? "chip-market-card" : ""}">
-        <span class="material-icon mat-icon-${m.color}">${m.icon}</span>
+      <article class="market-card ${id === "ore" || id === "chip" || id === "vovo_artifact" ? "chip-market-card" : ""}">
+        <span class="material-icon sticker-float">${m.icon}</span>
         <div style="margin-top:10px">${matBadge(id)}</div>
-        <p style="margin-top:8px">Estoque: <strong>${fmt(qtyAvailable)} ${m.unit}</strong></p>
-        <div class="market-price">${fmt(m.price)} <small>CR / un.</small></div>
+        <p style="margin-top:8px">Em estoque: <strong>${fmt(qtyAvailable)} ${m.unit}</strong></p>
+        <div class="market-price">🪙 ${fmt(m.price)} <small>CR / un.</small></div>
         <div class="sell-row">
           <input type="number" min="1" max="${Math.max(1, qtyAvailable)}" value="${qtyAvailable > 0 ? Math.min(5, qtyAvailable) : 0}" id="sell-${id}" ${disabled ? "disabled" : ""}>
           <button class="btn btn-light market-sell-btn" data-mat="${id}" type="button" ${disabled ? "disabled" : ""}>Vender</button>
@@ -478,9 +478,7 @@ function renderMarket(){
   }).join("");
 
   document.querySelectorAll(".market-sell-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      sellMaterial(btn.dataset.mat);
-    });
+    btn.addEventListener("click", () => sellMaterial(btn.dataset.mat));
   });
 }
 
@@ -492,52 +490,25 @@ function renderUpgrades(){
     const canAfford = state.coins >= u.cost;
     return `
       <article class="upgrade-card">
-        <span class="upgrade-icon">${u.icon}</span>
-        ${owned ? '<span class="owned">ADQUIRIDO</span>' : ""}
+        <span class="upgrade-icon sticker-float">${u.icon}</span>
+        ${owned ? '<span class="owned">✅ INSTALADO</span>' : ""}
         <h3>${u.name}</h3>
         <p>${u.desc}</p>
-        <div class="upgrade-cost">${fmt(u.cost)} <small>CRÉDITOS</small></div>
-        <div class="stat-foot">Eficiência: +${u.eff}%</div>
-        <button class="btn ${owned ? "btn-outline" : "btn-light"} full upgrade-buy-btn" data-upgrade="${u.id}" type="button" style="margin-top:16px" ${owned || !canAfford ? "disabled" : ""}>
-          ${owned ? "Adquirido" : !canAfford ? "Créditos insuficientes" : "Investir"}
+        <div class="upgrade-cost">🪙 ${fmt(u.cost)} <small>CRÉDITOS</small></div>
+        <div class="stat-foot positive">Bônus de Eficiência: +${u.eff}%</div>
+        <button class="btn ${owned ? "btn-outline" : "btn-primary"} full upgrade-buy-btn" data-upgrade="${u.id}" type="button" style="margin-top:16px" ${owned || !canAfford ? "disabled" : ""}>
+          ${owned ? "Equipamento Ativo" : !canAfford ? "Créditos Insuficientes" : "🛠️ Instalar Melhoria"}
         </button>
       </article>
     `;
   }).join("");
 
   document.querySelectorAll(".upgrade-buy-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      buyUpgrade(btn.dataset.upgrade);
-    });
+    btn.addEventListener("click", () => buyUpgrade(btn.dataset.upgrade));
   });
 }
 
-const STAGE_THEMES = [
-  { name: "FASE 1 · LAVRA", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1e3a5f"/><stop offset="100%" stop-color="#0b1724"/></linearGradient></defs><rect width="640" height="280" fill="url(#g1)"/><polygon points="120,280 260,100 400,280" fill="#132538" stroke="#22c55e" stroke-width="1.5" opacity="0.8"/><circle cx="260" cy="100" r="8" fill="#22c55e"/><text x="320" y="240" text-anchor="middle" fill="#94a3b8" font-family="Manrope,sans-serif" font-weight="800" font-size="12" letter-spacing="2">MAQUINARIA PESADA · LAVRA DE MINÉRIO</text></svg>` },
-  { name: "FASE 1 · COMINUIÇÃO", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#172d4c"/><stop offset="100%" stop-color="#070d18"/></linearGradient></defs><rect width="640" height="280" fill="url(#g2)"/><rect x="230" y="90" width="180" height="130" rx="16" fill="#0f1c2e" stroke="#06b6d4" stroke-width="2"/><circle cx="320" cy="155" r="35" fill="none" stroke="#22c55e" stroke-width="3" stroke-dasharray="8 4"/><text x="320" y="245" text-anchor="middle" fill="#06b6d4" font-family="Manrope,sans-serif" font-weight="800" font-size="12" letter-spacing="2">BRITADOR DE MANDÍBULAS INDUSTRIAL</text></svg>` },
-  { name: "FASE 1 · HIDROMETALURGIA", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1e3a5f"/><stop offset="100%" stop-color="#091321"/></linearGradient></defs><rect width="640" height="280" fill="url(#g3)"/><rect x="250" y="70" width="140" height="160" rx="24" fill="#0f1c2e" stroke="#a855f7" stroke-width="2"/><path d="M270 120 Q320 90 370 120 T420 150" fill="none" stroke="#a855f7" stroke-width="3"/><text x="320" y="250" text-anchor="middle" fill="#a855f7" font-family="Manrope,sans-serif" font-weight="800" font-size="12" letter-spacing="2">REFINARIA QUÍMICA DE ÓXIDOS</text></svg>` },
-  { name: "FASE 1 · METALURGIA", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g4" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#254b7d"/><stop offset="100%" stop-color="#0b1724"/></linearGradient></defs><rect width="640" height="280" fill="url(#g4)"/><polygon points="240,230 320,80 400,230" fill="#0f1c2e" stroke="#f59e0b" stroke-width="2"/><circle cx="320" cy="160" r="22" fill="#f59e0b" opacity="0.6"/><text x="320" y="260" text-anchor="middle" fill="#f59e0b" font-family="Manrope,sans-serif" font-weight="800" font-size="12" letter-spacing="2">FORNO METALÚRGICO DE REDUÇÃO</text></svg>` },
-  { name: "FASE 1 · ALTA TECNOLOGIA", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g5" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0f2c42"/><stop offset="100%" stop-color="#040812"/></linearGradient></defs><rect width="640" height="280" fill="url(#g5)"/><circle cx="320" cy="140" r="60" fill="none" stroke="#06b6d4" stroke-width="3"/><circle cx="320" cy="140" r="30" fill="#22c55e" opacity="0.5"/><text x="320" y="240" text-anchor="middle" fill="#22c55e" font-family="Manrope,sans-serif" font-weight="800" font-size="12" letter-spacing="2">LINHA DE ÍMÃS E MOTORES DE ALTA PERFORMANCE</text></svg>` },
-  { name: "FASE 2 · NANOFABRICAÇÃO DE CHIPS", svg: `<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g6" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0f1c2e"/><stop offset="100%" stop-color="#040812"/></linearGradient></defs><rect width="640" height="280" fill="url(#g6)"/><rect x="180" y="60" width="280" height="140" rx="16" fill="#0f1c2e" stroke="#06b6d4" stroke-width="2.5"/><line x1="180" y1="130" x2="460" y2="130" stroke="#22c55e" stroke-width="2"/><circle cx="320" cy="130" r="20" fill="#22c55e" filter="drop-shadow(0 0 10px #22c55e)"/><text x="320" y="235" text-anchor="middle" fill="#06b6d4" font-family="Manrope,sans-serif" font-weight="800" font-size="13" letter-spacing="2">FASE 2 · CHIPS QUÂNTICOS & SUPORTE ESTELAR</text></svg>` }
-];
-
-function currentStageTheme(){
-  const completed = state.completed.length;
-  if(completed >= 10) return STAGE_THEMES[5];
-  const idx = Math.min(4, Math.floor(completed / 2));
-  return STAGE_THEMES[idx];
-}
-
-function renderStageTheme(){
-  const theme = currentStageTheme();
-  const heroScene = $("heroScene");
-  if(heroScene){
-    heroScene.innerHTML = `${theme.svg}<span class="hero-stage-tag">${theme.name}</span>`;
-  }
-}
-
 function renderAll(){
-  renderStageTheme();
   renderDashboard();
   renderMissions();
   renderProcesses();
@@ -549,10 +520,8 @@ function runProcess(id){
   const p = PROCESSES.find(x => x.id === id);
   if(!p || !unlockedProcess(p)) return;
   const cost = effectiveCost(p);
-  const hasMain = (state.stock[p.input] || 0) >= p.qty;
-  const hasExtra = !p.extraInput || (state.stock[p.extraInput] || 0) >= p.extraQty;
-  if(!hasMain || !hasExtra || state.coins < cost){
-    toast("Recursos ou créditos insuficientes para esta operação.");
+  if((state.stock[p.input] || 0) < p.qty || (p.extraInput && (state.stock[p.extraInput] || 0) < p.extraQty) || state.coins < cost){
+    toast("⚠️ Insumos ou créditos insuficientes!");
     return;
   }
   state.stock[p.input] -= p.qty;
@@ -561,146 +530,128 @@ function runProcess(id){
   state.produced[p.output] = (state.produced[p.output] || 0) + p.out;
   state.coins -= cost;
   state.production += p.out;
+  
+  playSfx("crush");
+  spawnFloatingText(`+${p.out} ${MATERIALS[p.output].icon} ${MATERIALS[p.output].name}`, "#22d3ee");
   save();
 
-  const htmlResult = `<strong>${p.title}:</strong> você produziu <strong>${p.out} un.</strong> de ${matBadge(p.output)}.<br><br>${p.learn}`;
-  showModal(p.isFinalProject ? "Módulo VovôBrDias construído!" : "Processamento concluído", htmlResult, p.isFinalProject ? "🚀" : "⚙", p.isFinalProject ? "HOMENAGEM SUPREMA" : "PRODUÇÃO");
+  toast(`⚙️ ${p.title}: +${p.out} ${MATERIALS[p.output].name} produzidos!`);
 }
 
 function completeMission(i){
   if(i !== activeMissionIndex()) return;
   const m = MISSIONS[i];
   if((state.stock[m.goal] || 0) < m.target){
-    toast(`Você precisa ter ${m.target} unidades de ${MATERIALS[m.goal].name}.`);
+    playSfx("click");
+    toast(`⚠️ Você precisa de ${m.target} un. de ${MATERIALS[m.goal].name}.`);
     return;
   }
   state.completed.push(i);
   state.coins += m.reward;
+  playSfx("win");
+  spawnFloatingText(`+🪙 ${fmt(m.reward)} CR!`, "#fbbf24");
   save();
-  const isAllDone = state.completed.length >= MISSIONS.length;
-  const justUnlockedPhase2 = state.completed.length === 10;
-  
-  let titleModal = isAllDone ? "Império Supremo Concluído!" : justUnlockedPhase2 ? "🏆 HOMENAGEM DE NÍVEL · FASE 2 LIBERADA!" : "Missão concluída!";
-  let htmlResult = isAllDone
-    ? `Parabéns Diretor VovôBrDias! Você concluiu todas as 20 missões, eternizando seu império supremo nas estrelas!`
-    : justUnlockedPhase2
-    ? `⭐ <strong>Homenagem Especial ao Diretor VovôBrDias!</strong><br><br>Você completou com brilhantismo as <strong>10 primeiras missões</strong> da Fase 1!<br>Sua liderança elevou a mineradora ao <strong>Nível 2</strong>.<br><br>🚀 A <strong>Fase 2: Era da Nanofabricação de Chips & Supercomputadores Quânticos</strong> está oficialmente iniciada! Prepare-se para novos desafios tecnológicos.`
-    : `Parabéns! Você concluiu a missão <strong>${m.title}</strong> e recebeu <strong>${fmt(m.reward)} créditos</strong>.`;
 
-  showModal(titleModal, htmlResult, isAllDone ? "🚀" : justUnlockedPhase2 ? "🏆" : "✦", isAllDone ? "LEGADO ETERNO" : justUnlockedPhase2 ? "SUBIDA DE NÍVEL" : "RECOMPENSA");
+  const justUnlockedPhase2 = state.completed.length === 10;
+  const isAllDone = state.completed.length >= MISSIONS.length;
+
+  const titleModal = isAllDone ? "👑 IMPÉRIO SUPREMO CONQUISTADO!" : justUnlockedPhase2 ? "🏆 NÍVEL 2 · FASE 2 LIBERADA!" : `${m.sticker} Missão Concluída!`;
+  const htmlResult = isAllDone
+    ? `Parabéns Diretor VovôBrDias! Você completou todas as 20 missões e dominou o universo!`
+    : justUnlockedPhase2
+    ? `⭐ <strong>Homenagem ao Diretor VovôBrDias!</strong><br><br>Você completou as 10 missões industriais e subiu para o <strong>Nível 2</strong>!<br>🚀 A <strong>Fase 2 (Chips & Espaço)</strong> foi desbloqueada!`
+    : `Excelente trabalho! Você completou <strong>${m.title}</strong> e ganhou 🪙 <strong>+${fmt(m.reward)} Créditos</strong>!`;
+
+  showModal(titleModal, htmlResult, isAllDone ? "👑" : justUnlockedPhase2 ? "🏆" : m.sticker, "RECOMPENSA");
 }
 
 function sellMaterial(id){
   const input = $("sell-" + id);
   if(!input) return;
   const qty = Math.floor(Number(input.value));
-  if(!Number.isFinite(qty) || qty <= 0){
-    toast("Informe uma quantidade válida.");
-    return;
-  }
-  if(qty > state.stock[id]){
-    toast("Você não possui essa quantidade no estoque.");
+  if(!Number.isFinite(qty) || qty <= 0 || qty > state.stock[id]){
+    toast("⚠️ Quantidade inválida.");
     return;
   }
   const revenue = qty * MATERIALS[id].price;
   state.stock[id] -= qty;
   state.coins += revenue;
+  playSfx("coin");
+  spawnFloatingText(`+🪙 ${fmt(revenue)} CR`, "#4ade80");
   save();
-  toast(`${qty} unidade(s) vendida(s) com sucesso.`);
+  toast(`💰 Venda realizada: +${fmt(revenue)} CR!`);
 }
 
 function buyUpgrade(id){
   const u = UPGRADES.find(x => x.id === id);
-  if(!u || state.upgrades.includes(id)) return;
-  if(state.coins < u.cost){
-    toast("Créditos insuficientes para investimento.");
-    return;
-  }
+  if(!u || state.upgrades.includes(id) || state.coins < u.cost) return;
   state.coins -= u.cost;
   state.upgrades.push(id);
+  playSfx("win");
+  spawnFloatingText(`+${u.eff}% Eficiência!`, "#a855f7");
   save();
-  showModal("Investimento realizado", `<strong>${u.name}</strong> adquirido com sucesso!`, "⬡", "PESQUISA");
+  showModal("Melhoria Instalada!", `<strong>${u.name}</strong> agora está operando na sua fábrica (+${u.eff}% eficiência)!`, u.icon, "ENGENHARIA");
 }
 
 function startNewGame(){
-  if(!confirm("Deseja iniciar uma nova partida?\n\nTodo o progresso atual desta empresa será reiniciado.")) return;
+  playSfx("click");
+  if(!confirm("Deseja reiniciar a campanha do zero com 1.200 de Minério Bruto e 15.000 Créditos?")) return;
   closeModal();
+  localStorage.removeItem(SAVE_KEY);
   state = structuredClone(DEFAULT_STATE);
   save();
   changeView("dashboard");
-  toast("Nova partida iniciada com sucesso!");
+  toast("✨ Nova campanha iniciada com 1.200 Minérios!");
 }
 
-// Event Bindings
-document.querySelectorAll(".nav-link").forEach(b => {
-  b.addEventListener("click", () => changeView(b.dataset.view));
-});
+document.querySelectorAll(".nav-link").forEach(b => b.addEventListener("click", () => changeView(b.dataset.view)));
+document.querySelectorAll("[data-goto]").forEach(b => b.addEventListener("click", () => changeView(b.dataset.goto)));
 
-document.querySelectorAll("[data-goto]").forEach(b => {
-  b.addEventListener("click", () => changeView(b.dataset.goto));
-});
+if($("brandHome")) $("brandHome").addEventListener("click", e => { e.preventDefault(); changeView("dashboard"); });
 
-const brandHome = $("brandHome");
-if(brandHome) brandHome.addEventListener("click", e => { e.preventDefault(); changeView("dashboard"); });
-
-const mobileMenu = $("mobileMenu");
-const sidebar = $("sidebar");
-const sidebarBackdrop = $("sidebarBackdrop");
-
-if(mobileMenu && sidebar && sidebarBackdrop) {
-  mobileMenu.addEventListener("click", () => {
-    sidebar.classList.toggle("open");
-    sidebarBackdrop.classList.toggle("show");
+if($("mobileMenu") && $("sidebar") && $("sidebarBackdrop")){
+  $("mobileMenu").addEventListener("click", () => {
+    $("sidebar").classList.toggle("open");
+    $("sidebarBackdrop").classList.toggle("show");
   });
-  sidebarBackdrop.addEventListener("click", () => {
-    sidebar.classList.remove("open");
-    sidebarBackdrop.classList.remove("show");
+  $("sidebarBackdrop").addEventListener("click", () => {
+    $("sidebar").classList.remove("open");
+    $("sidebarBackdrop").classList.remove("show");
   });
 }
 
-["newGame", "newGameButton", "resetGame"].forEach(id => {
-  const btn = $(id);
-  if(btn) btn.addEventListener("click", startNewGame);
+["newGame", "resetGame"].forEach(id => {
+  if($(id)) $(id).addEventListener("click", startNewGame);
 });
 
-const syncCloudBtn = $("syncCloudBtn");
-if(syncCloudBtn){
-  syncCloudBtn.addEventListener("click", () => {
-    loadFromCloud();
-    toast("Sincronizando dados com o Firebase...");
+if($("mineBonusBtn")){
+  $("mineBonusBtn").addEventListener("click", () => {
+    state.stock.ore += 100;
+    playSfx("crush");
+    spawnFloatingText("+100 🪨 Minério Bruto", "#fbbf24");
+    save();
+    toast("⛏️ Escavadeira extraiu +100 unidades de Minério Bruto!");
   });
 }
 
-const modalClose = $("modalClose");
-if(modalClose) modalClose.addEventListener("click", closeModal);
-const modalOk = $("modalOk");
-if(modalOk) modalOk.addEventListener("click", closeModal);
-const modalBackdrop = $("modalBackdrop");
-if(modalBackdrop) modalBackdrop.addEventListener("click", e => { if(e.target === modalBackdrop) closeModal(); });
+if($("sfxToggleBtn")){
+  $("sfxToggleBtn").addEventListener("click", () => {
+    sfxEnabled = !sfxEnabled;
+    $("sfxToggleBtn").textContent = sfxEnabled ? "🔊 SFX: ON" : "🔇 SFX: OFF";
+    if(sfxEnabled) playSfx("coin");
+  });
+}
 
-const speakMissionBtn = $("speakMissionBtn");
-if(speakMissionBtn) speakMissionBtn.addEventListener("click", speakCurrentMission);
+if($("modalClose")) $("modalClose").addEventListener("click", closeModal);
+if($("modalOk")) $("modalOk").addEventListener("click", closeModal);
+if($("modalBackdrop")) $("modalBackdrop").addEventListener("click", e => { if(e.target === $("modalBackdrop")) closeModal(); });
+if($("speakMissionBtn")) $("speakMissionBtn").addEventListener("click", speakCurrentMission);
 
-const todayLabel = $("todayLabel");
-if(todayLabel) todayLabel.textContent = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", year: "numeric" }).format(new Date());
-
-// Audio Assistant Toggles
-const audioEnable = $("audioEnable");
-if(audioEnable) audioEnable.addEventListener("click", () => { audioEnabled = true; speak("Áudio ativado."); toast("Áudio ativado."); });
-
-const audioRepeat = $("audioRepeat");
-if(audioRepeat) audioRepeat.addEventListener("click", () => speak(lastSpokenText));
-
-const audioToggle = $("audioToggle");
-if(audioToggle) audioToggle.addEventListener("click", () => {
-  audioEnabled = !audioEnabled;
-  audioToggle.textContent = audioEnabled ? "Áudio ligado" : "Áudio desligado";
-  audioToggle.setAttribute("aria-pressed", String(audioEnabled));
-  if(!audioEnabled) stopSpeech();
-  else speak("Áudio ligado.");
+if($("audioEnable")) $("audioEnable").addEventListener("click", () => { audioVoiceEnabled = true; speak("Narrador tático ativado, Diretor!"); });
+if($("audioRepeat")) $("audioRepeat").addEventListener("click", () => speak(lastSpokenText));
+if($("audioToggle")) $("audioToggle").addEventListener("click", () => {
+  audioVoiceEnabled = !audioVoiceEnabled;
+  $("audioToggle").textContent = audioVoiceEnabled ? "Voz Ligada" : "Voz Desligada";
 });
 
-// Initial load
-loadFromCloud().then(() => {
-  renderAll();
-});
+renderAll();
