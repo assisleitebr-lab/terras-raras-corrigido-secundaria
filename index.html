@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta name="theme-color" content="#070d18">
-  <meta name="description" content="Simulador educativo de terras raras com Fase 2 de Chips, Firebase e suporte a PWA mobile e desktop.">
-  <title>Terras Raras | Mining Industry (PWA v3.3)</title>
+  <meta name="description" content="Simulador educativo de terras raras com 2 fases de 10 missões, homenagem de nível, chips e PWA mobile.">
+  <title>Terras Raras | Mining Industry (PWA v3.4)</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,12 +36,12 @@
         <div class="help-box">
           <span class="help-icon">i</span>
           <div>
-            <strong>Modo PWA Android</strong>
-            <p>Instale na tela inicial para jogar em tela cheia como app nativo!</p>
+            <strong>Fase 1 & Fase 2 (20 Missões)</strong>
+            <p>Conclua as 10 primeiras para receber a Homenagem e liberar a Era dos Chips!</p>
           </div>
         </div>
         <button class="reset-link" id="resetGame" type="button">↻ Começar nova partida</button>
-        <small class="version">PROFISSIONAL v3.3 · PWA MOBILE</small>
+        <small class="version">PROFISSIONAL v3.4 · PWA MOBILE</small>
       </div>
     </aside>
 
@@ -78,9 +78,9 @@
       <section class="view active" id="view-dashboard">
         <div class="welcome-row">
           <div>
-            <div class="eyebrow"><span class="live-dot"></span> CENTRO DE COMANDO · FASE 2 & VOVÔBRDIAS</div>
+            <div class="eyebrow"><span class="live-dot"></span> CENTRO DE COMANDO · VovôBrDias</div>
             <h1>Bom trabalho, <span>Diretor.</span></h1>
-            <p>Sua liderança abriu as portas para a Fase 2: Nanofabricação de Chips e Domínio Quântico.</p>
+            <p>Gerencie sua planta industrial, conquiste as 10 missões da Fase 1, receba sua homenagem de nível e avance para a Fase 2 de Chips!</p>
           </div>
           <div class="welcome-actions">
             <div class="date-chip">◷ <span id="todayLabel">Simulação em andamento</span></div>
@@ -90,9 +90,9 @@
 
         <div class="hero-banner">
           <div class="hero-copy">
-            <span class="hero-kicker" id="heroKicker">FASE 1 · INFRAESTRUTURA INDUSTRIAL</span>
-            <h2 id="heroTitle">Rumo às<br><em>estrelas.</em></h2>
-            <p id="heroDesc">Construa propulsores quânticos e concretize o Módulo Especial VovôBrDias na Fase 1, antes de avançar para a Fase 2 de Nanofabricação de Chips.</p>
+            <span class="hero-kicker" id="heroKicker">FASE 1 · INFRAESTRUTURA INDUSTRIAL (1-10)</span>
+            <h2 id="heroTitle">Rumo à<br><em>excelência.</em></h2>
+            <p id="heroDesc">Conclua as 10 primeiras missões industriais para desbloquear a Homenagem de Nível e a Fase 2 de Nanofabricação de Chips.</p>
             <button class="btn btn-light" type="button" data-goto="missions">Continuar missão <span>→</span></button>
           </div>
           <div class="hero-scene" id="heroScene" aria-hidden="true"></div>
@@ -101,7 +101,7 @@
 
         <div class="section-heading">
           <div><span class="eyebrow">INDICADORES DE PERFORMANCE</span><h2>Painel operacional</h2></div>
-          <span class="updated-label"><span class="live-dot" style="background:#22c55e"></span> Sincronizado Firebase · Responsivo</span>
+          <span class="updated-label"><span class="live-dot" style="background:#22c55e"></span> Sincronizado Firebase · 2 Fases (10+10)</span>
         </div>
 
         <div class="stat-grid">
@@ -156,7 +156,7 @@
         </div>
 
         <div class="section-heading lower-heading">
-          <div><span class="eyebrow">LINHA DO TEMPO INDUSTRIAL & FASE 2</span><h2>Etapas da cadeia produtiva</h2></div>
+          <div><span class="eyebrow">ETAPAS DA FASE 1 (1 A 10)</span><h2>Cadeia produtiva industrial</h2></div>
           <button class="text-button" type="button" data-goto="missions">Ver todas →</button>
         </div>
         <div class="chain-strip" id="chainStrip"></div>
@@ -165,9 +165,9 @@
       <!-- VIEW: MISSIONS -->
       <section class="view" id="view-missions">
         <div class="page-intro">
-          <span class="eyebrow">PROGRESSÃO E TAREFAS · FASE 1 & FASE 2</span>
+          <span class="eyebrow">PROGRESSÃO E TAREFAS · 2 FASES DE 10 MISSÕES</span>
           <h1>Central de <span>missões</span></h1>
-          <p>Conclua a Fase 1 industrial e desbloqueie a Fase 2 focada em fabricação massiva de chips e império quântico!</p>
+          <p>Conclua as 10 missões da Fase 1 para receber a **Homenagem de Nível** do Diretor VovôBrDias e liberar a Fase 2 (Chips e Quântico)!</p>
         </div>
         <div class="mission-summary">
           <div><strong id="missionSummaryCount">0/20</strong><span>missões concluídas</span></div>
@@ -239,7 +239,7 @@
       </section>
 
       <footer class="footer">
-        <span>© 2026 TERRAS RARAS · MINING INDUSTRY (Fase 2 Chips & PWA Mobile)</span>
+        <span>© 2026 TERRAS RARAS · MINING INDUSTRY (Fase 1 & 2 · VovôBrDias)</span>
         <span>Simulação industrial e espacial avançada.</span>
       </footer>
     </main>
